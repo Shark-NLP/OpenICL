@@ -1,3 +1,0 @@
-# OpenICL
-
-coming soon.
