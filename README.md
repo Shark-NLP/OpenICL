@@ -129,7 +129,7 @@ def test_bm25_mtop():
     data = DatasetReader(ds, input_columns=['question'], output_column='logical_form')  
 
     # 3. Define a `PromptTemplate`. (string-type template)  
-    tp = PromptTemplate("</E></question>\t</logical>" 
+    tp = PromptTemplate("</E></question>\t</logical>",
                         {
                             'question' : '</question>', 
                             'logical_form' : '</logical>',
