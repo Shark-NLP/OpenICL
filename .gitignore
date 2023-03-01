@@ -1,0 +1,13 @@
+# Compiled python modules.
+*.pyc
+
+# Byte-compiled
+__pycache__/
+.cache/
+
+# Test file
+test.py
+
+# Config 
+openicl.egg-info/
+icl_inference_output/
