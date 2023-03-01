@@ -126,10 +126,10 @@ def test_bm25_mtop():
     dataset = load_dataset("iohadrubin/mtop")
 
     # 2. Define a `DatasetReader`.
-    data = DatasetReader(ds, input_columns=['question'], output_column='logical_form')  
+    data = DatasetReader(dataset, input_columns=['question'], output_column='logical_form')  
 
     # 3. Define a `PromptTemplate`. (string-type template)  
-    tp = PromptTemplate("</E></question>\t</logical>",
+    template = PromptTemplate("</E></question>\t</logical>",
                         {
                             'question' : '</question>', 
                             'logical_form' : '</logical>',
