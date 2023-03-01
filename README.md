@@ -33,7 +33,7 @@ we will support  `pip install openicl`  later
 ### Using Git
 Clone the repository from github:
 ```
-git clone https://github.com/numbmelon/OpenICL
+git clone https://github.com/Shark-NLP/OpenICL
 cd OpenICL
 pip install -e .
 ```
