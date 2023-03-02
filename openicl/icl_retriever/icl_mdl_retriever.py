@@ -45,12 +45,18 @@ class MDLRetriever(TopkRetriever):
                  ce_model_name: Optional[str] = 'gpt2-xl',
                  batch_size: Optional[int] = 1,
                  select_time: Optional[int] = 5,
-                 accelerator: Optional[Accelerator] = None
+                 accelerator: Optional[Accelerator] = None,
+                 ice_template: Optional[PromptTemplate] = None, 
+                 prompt_template: Optional[PromptTemplate] = None,
+                 labels: Optional[List] = None
     ) -> None:
         super().__init__(dataset_reader, ice_separator, ice_eos_token, prompt_eos_token, sentence_transformers_model_name, ice_num, index_split, test_split, tokenizer_name, batch_size, accelerator)
         self.ce_model_name = ce_model_name
         self.candidate_num = candidate_num
         self.select_time = select_time
+        self.ice_template = ice_template
+        self.prompt_template = prompt_template
+        self.labels = labels
 
         
     def topk_search(self):
@@ -65,11 +71,20 @@ class MDLRetriever(TopkRetriever):
             mdl_scores = []
             for _ in range(self.select_time):
                 rand_idx_list = np.random.choice(near_ids, self.ice_num, replace=False)
+                rand_idx_list = [int(i) for i in rand_idx_list]
                 candidates.append(rand_idx_list)
-                input_texts = []
-                for rand_idx in rand_idx_list:
-                    input_texts.append(self.select_datalist[rand_idx])
-                loss_list = self.cal_ce(input_texts)
+                
+                ice = self.generate_ice(rand_idx_list, ice_template=self.ice_template)
+                mask_length = len(self.tokenizer(ice+self.ice_eos_token, verbose=False)['input_ids'])
+                if self.labels is None:
+                    labels = self.get_labels(self.ice_template, self.prompt_template)
+                else:
+                    labels = self.labels
+                prompt_list = []
+                for label in labels:
+                    prompt = self.generate_label_prompt(idx, ice, label, self.ice_template, self.prompt_template)
+                    prompt_list.append(prompt)
+                loss_list = self.cal_ce(prompt_list, mask_length=mask_length)
                 probs = np.exp(-np.array(loss_list))
                 normalized_probs = probs / probs.sum(0, keepdims=True)
                 neg_entropy = -entropy(normalized_probs, label_dim=0)
@@ -85,24 +100,29 @@ class MDLRetriever(TopkRetriever):
         return self.topk_search()
         
         
-    def cal_ce(self, input_texts: List[List]):
+    def cal_ce(self, input_texts: List[List], mask_length=None):
         if self.metric_model is None:
             print("load metric model")
             self.metric_model = AutoModelForCausalLM.from_pretrained(self.ce_model_name)
             self.metric_model.to(self.device)
         inputs = self.tokenizer(input_texts, padding=True, return_tensors='pt', truncation=True)
-        inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
         outputs = self.metric_model(**inputs)
         
         shift_logits = outputs.logits[..., :-1, :].contiguous()
         shift_labels = inputs["input_ids"][..., 1:].contiguous()
         
-        
         loss_fct = torch.nn.CrossEntropyLoss(reduction='none', ignore_index=self.tokenizer.pad_token_id)
-        loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1)).view(
-        shift_labels.size())
+        shift_logits = shift_logits.view(-1, shift_logits.size(-1))
+        loss = loss_fct(shift_logits, shift_labels.view(-1)).view(shift_labels.size())
+        if mask_length is not None:
+            mask = torch.cat([torch.zeros([loss.shape[0], mask_length], dtype=torch.float), torch.ones([loss.shape[0], loss.shape[-1] - mask_length], dtype=torch.float)], -1)
+            mask = mask.to(self.device)
+            loss = torch.mul(mask, loss)
         
         lens = (inputs["input_ids"] != self.tokenizer.pad_token_id).sum(-1).cpu().numpy()
+        if mask_length is not None:
+            lens -= mask_length
         ce_loss = loss.sum(-1).cpu().detach().numpy() / lens
         return ce_loss
     

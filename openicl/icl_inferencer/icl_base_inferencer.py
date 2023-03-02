@@ -71,7 +71,7 @@ class BaseInferencer:
             else:
                 self.model = AutoModelForCausalLM.from_pretrained(model_name)
         else:
-            self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map='auto', offload_folder='offload', offload_state_dict = True, torch_dtype=torch.float16)
+            self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map='auto', offload_folder='offload', offload_state_dict=True, torch_dtype=torch.float16)
 
 
     def __init_tokenizer(self, tokenizer_name):

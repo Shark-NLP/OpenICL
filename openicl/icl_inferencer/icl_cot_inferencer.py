@@ -45,7 +45,7 @@ class CoTInferencer(BaseInferencer):
                  api_name: Optional[str] = None,
                  model_parallel: Optional[bool] = False
     ) -> None:
-        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name)
+        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel)
         self.cot_list = cot_list
         self.gen_field_replace_token = gen_field_replace_token
         self.generation_kwargs = generation_kwargs

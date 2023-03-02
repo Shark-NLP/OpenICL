@@ -58,7 +58,7 @@ class TopkRetriever(BaseRetriever):
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.tokenizer.pad_token = self.tokenizer.eos_token
         self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
-        self.tokenizer.padding_side = "left"
+        self.tokenizer.padding_side = "right"
         
         self.encode_dataset = DatasetEncoder(gen_datalist, tokenizer=self.tokenizer)
         co = DataCollatorWithPaddingAndCuda(tokenizer=self.tokenizer, device=self.device)
