@@ -44,7 +44,7 @@ class DatasetReader:
     ) -> None:
         self.input_columns = _check_type_list(input_columns, [List, str])
         if isinstance(self.input_columns, str):
-            self.input_columns = list(self.input_columns)
+            self.input_columns = self.input_columns.split()
         self.output_column = _check_str(output_column)
         self.ds_size = _check_type_list(ds_size, [None, int, float])
         if input_template is not None:
