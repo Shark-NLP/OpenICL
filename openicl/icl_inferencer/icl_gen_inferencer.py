@@ -40,7 +40,8 @@ class GenInferencer(BaseInferencer):
                  accelerator: Optional[Accelerator] = None,
                  output_json_filepath: Optional[str] = "./icl_inference_output",
                  output_json_filename: Optional[str] = "predictions",
-                 api_name: Optional[str] = None
+                 api_name: Optional[str] = None,
+                 model_parallel: Optional[bool] = False
     ) -> None:
         super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name)
         self.gen_field_replace_token = gen_field_replace_token

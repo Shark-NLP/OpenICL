@@ -5,7 +5,7 @@ import torch
 from openicl import BaseRetriever, PromptTemplate
 from openicl.utils.api_service import *
 from openicl.icl_evaluator import *
-from transformers import AutoTokenizer, AutoModelForCausalLM, PretrainedConfig, GPT2Tokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM, PretrainedConfig, GPT2Tokenizer, AutoConfig
 from typing import List, Union, Optional
 from accelerate import Accelerator
 
@@ -35,16 +35,18 @@ class BaseInferencer:
                  accelerator: Optional[Accelerator] = None,
                  output_json_filepath: Optional[str] = "./icl_inference_output",
                  output_json_filename: Optional[str] = "predictions",
-                 api_name: Optional[str] = None
+                 api_name: Optional[str] = None,
+                 model_parallel: Optional[bool] = False,
     ) -> None:
         self.model_name = model_name
         self.tokenizer_name = tokenizer_name if tokenizer_name is not None else model_name
         self.accelerator = accelerator
         self.api_name = api_name
+        
 
         self.__init_api()
         if not self.call_api:
-            self.__init_model(self.model_name, model_config)
+            self.__init_model(self.model_name, model_config, model_parallel)
             self.__init_tokenizer(self.tokenizer_name)
             
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -62,11 +64,14 @@ class BaseInferencer:
         raise NotImplementedError("Method hasn't been implemented yet")
     
     
-    def __init_model(self, model_name, model_config):
-        if model_config is not None:
-            self.model = AutoModelForCausalLM.from_config(model_config)
+    def __init_model(self, model_name, model_config, model_parallel):
+        if not model_parallel:
+            if model_config is not None:
+                self.model = AutoModelForCausalLM.from_config(model_config)
+            else:
+                self.model = AutoModelForCausalLM.from_pretrained(model_name)
         else:
-            self.model = AutoModelForCausalLM.from_pretrained(model_name)
+            self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map='auto', offload_folder='offload', offload_state_dict = True, torch_dtype=torch.float16)
 
 
     def __init_tokenizer(self, tokenizer_name):
