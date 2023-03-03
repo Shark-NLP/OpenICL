@@ -38,22 +38,7 @@ cd OpenICL
 pip install -e .
 ```
 
-## Supported Methods
-In this library, we support the following methods for both Retrieval and Inference. (**updating...**)
-
-### Retrieval
-+ Random
-+ BM25
-+ TopK
-+ VoteK
-+ MDL
-
-### Inference
-+ Direct
-+ PPL
-+ CoT
-
-## Introduction by Two Examples
+## Quick Start
 ### Text Classification Example
 As an example of using the TopK retrieval method to evaluate the SST-2 dataset, the process is as follows:
 
