@@ -46,11 +46,11 @@ class BaseInferencer:
         self.api_name = api_name
         
         if 'no_split_module_classes' not in kwargs.keys():
-            kwargs['no_spilt_module_classes'] = []
+            kwargs['no_split_module_classes'] = []
         if 'device_map' not in kwargs.keys():
             kwargs['device_map'] = None
             
-        no_split_module_classes = kwargs['no_spilt_module_classes']
+        no_split_module_classes = kwargs['no_split_module_classes']
         device_map = kwargs['device_map']
 
         self.__init_api()
