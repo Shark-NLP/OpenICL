@@ -59,7 +59,7 @@ class BaseInferencer:
             self.__init_model(self.model_name, model_config, model_parallel, device_map, no_split_module_classes)
             self.__init_tokenizer(self.tokenizer_name)
             
-        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self.device =  "cuda" if torch.cuda.is_available() else "cpu"
         if self.model is not None:
             self.model.to(self.device)
         self.max_model_token_num = max_model_token_num

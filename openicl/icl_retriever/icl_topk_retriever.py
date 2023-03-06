@@ -56,7 +56,7 @@ class TopkRetriever(BaseRetriever):
         if not self.is_main_process:
             logger.setLevel(SUBPROCESS_LOG_LEVEL)
             
-        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.batch_size = batch_size
         self.tokenizer_name = tokenizer_name
         gen_datalist = self.dataset_reader.generate_input_field_corpus(self.test_ds)
