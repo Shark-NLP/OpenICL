@@ -8,6 +8,7 @@ from openicl.icl_evaluator import *
 from transformers import AutoTokenizer, AutoModelForCausalLM, PretrainedConfig, GPT2Tokenizer, AutoConfig
 from typing import List, Union, Optional
 from accelerate import Accelerator
+from accelerate import init_empty_weights, infer_auto_device_map
 
 class BaseInferencer:
     """Basic In-context Learning Inferencer Class
@@ -37,16 +38,24 @@ class BaseInferencer:
                  output_json_filename: Optional[str] = "predictions",
                  api_name: Optional[str] = None,
                  model_parallel: Optional[bool] = False,
+                 **kwargs
     ) -> None:
         self.model_name = model_name
         self.tokenizer_name = tokenizer_name if tokenizer_name is not None else model_name
         self.accelerator = accelerator
         self.api_name = api_name
         
+        if 'no_split_module_classes' not in kwargs.keys():
+            kwargs['no_spilt_module_classes'] = []
+        if 'device_map' not in kwargs.keys():
+            kwargs['device_map'] = None
+            
+        no_split_module_classes = kwargs['no_spilt_module_classes']
+        device_map = kwargs['device_map']
 
         self.__init_api()
         if not self.call_api:
-            self.__init_model(self.model_name, model_config, model_parallel)
+            self.__init_model(self.model_name, model_config, model_parallel, device_map, no_split_module_classes)
             self.__init_tokenizer(self.tokenizer_name)
             
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -64,15 +73,23 @@ class BaseInferencer:
         raise NotImplementedError("Method hasn't been implemented yet")
     
     
-    def __init_model(self, model_name, model_config, model_parallel):
+    def __init_model(self, model_name, model_config, model_parallel, device_map, no_split_module_classes):
         if not model_parallel:
             if model_config is not None:
                 self.model = AutoModelForCausalLM.from_config(model_config)
             else:
                 self.model = AutoModelForCausalLM.from_pretrained(model_name)
         else:
-            self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map='auto', offload_folder='offload', offload_state_dict=True, torch_dtype=torch.float16)
-
+            if model_config is None:
+                model_config = AutoConfig.from_pretrained(model_name)
+            with init_empty_weights():
+                empty_model = AutoModelForCausalLM.from_config(model_config)
+            
+            if device_map is None:
+                device_map = infer_auto_device_map(empty_model, no_split_module_classes=no_split_module_classes)
+            
+            self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map, offload_folder="offload", offload_state_dict=True, torch_dtype=torch.float16)
+            
 
     def __init_tokenizer(self, tokenizer_name):
         if self.api_name == 'opt-175b':

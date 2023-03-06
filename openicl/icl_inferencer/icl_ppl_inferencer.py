@@ -40,9 +40,10 @@ class PPLInferencer(BaseInferencer):
                  output_json_filename: Optional[str] = "predictions",
                  api_name: Optional[str] = None,
                  labels: Optional[List] = None,
-                 model_parallel: Optional[bool] = False
+                 model_parallel: Optional[bool] = False,
+                 **kwargs
     ) -> None:
-        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel)
+        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)
         self.labels = labels
 
 

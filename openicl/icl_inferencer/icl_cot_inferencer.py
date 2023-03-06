@@ -43,9 +43,10 @@ class CoTInferencer(BaseInferencer):
                  output_json_filepath: Optional[str] = "./icl_inference_output",
                  output_json_filename: Optional[str] = "predictions",
                  api_name: Optional[str] = None,
-                 model_parallel: Optional[bool] = False
+                 model_parallel: Optional[bool] = False,
+                 **kwargs
     ) -> None:
-        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel)
+        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)
         self.cot_list = cot_list
         self.gen_field_replace_token = gen_field_replace_token
         self.generation_kwargs = generation_kwargs
