@@ -1,4 +1,4 @@
-'''Basic Inferencer'''
+"""Basic Inferencer"""
 
 import os
 import torch
@@ -43,6 +43,7 @@ class BaseInferencer:
         self.model_name = model_name
         self.tokenizer_name = tokenizer_name if tokenizer_name is not None else model_name
         self.accelerator = accelerator
+        self.is_main_process = True if self.accelerator is None or self.accelerator.is_main_process else False
         self.api_name = api_name
         
         if 'no_split_module_classes' not in kwargs.keys():

@@ -1,4 +1,4 @@
-'''chain-of-thought inferencer'''
+"""chain-of-thought inferencer"""
 
 import torch
 from openicl import PromptTemplate
@@ -10,7 +10,10 @@ from tqdm import tqdm
 from transformers import PretrainedConfig
 from openicl.utils.api_service import * 
 from openicl.utils.icl_common_utils import get_dataloader, get_generation_prompt_list_from_retriever_indices
+from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
 from accelerate import Accelerator
+
+logger = get_logger(__name__)
 
 class CoTInferencer(BaseInferencer):
     """COT In-context Learning Inferencer Class
@@ -47,6 +50,8 @@ class CoTInferencer(BaseInferencer):
                  **kwargs
     ) -> None:
         super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)
+        if not self.is_main_process:
+            logger.setLevel(SUBPROCESS_LOG_LEVEL)    
         self.cot_list = cot_list
         self.gen_field_replace_token = gen_field_replace_token
         self.generation_kwargs = generation_kwargs
@@ -75,7 +80,7 @@ class CoTInferencer(BaseInferencer):
             dataloader = get_dataloader(prompt_list, self.batch_size)
             output_handler.save_orgin_prompts(prompt_list)
             
-            for entry in tqdm(dataloader):
+            for entry in tqdm(dataloader, disable=not self.is_main_process):
                 # 4-2-1. Inference with local model
                 if not self.call_api:
                     with torch.no_grad():

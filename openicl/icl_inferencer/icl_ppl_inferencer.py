@@ -1,4 +1,4 @@
-'''PPL Inferencer'''
+"""PPL Inferencer"""
 
 import json
 import torch
@@ -6,6 +6,7 @@ from openicl import PromptTemplate
 from openicl.icl_retriever import *
 from openicl.icl_evaluator import *
 from openicl.icl_inferencer.icl_base_inferencer import BaseInferencer, PPLInferencerOutputHandler
+from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
 from openicl.utils.api_service import *
 from typing import List, Union, Optional
 from tqdm import tqdm
@@ -13,6 +14,7 @@ from tqdm import trange
 from transformers import PretrainedConfig
 from accelerate import Accelerator
 
+logger = get_logger(__name__)
 
 class PPLInferencer(BaseInferencer):
     """PPL In-context Learning Inferencer Class
@@ -44,6 +46,8 @@ class PPLInferencer(BaseInferencer):
                  **kwargs
     ) -> None:
         super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)
+        if not self.is_main_process:
+            logger.setLevel(SUBPROCESS_LOG_LEVEL)
         self.labels = labels
 
 
@@ -86,8 +90,8 @@ class PPLInferencer(BaseInferencer):
                 prompt_list.append(prompt)
             
             # 5.2 Get PPL
-            print(f"Calculating PPL for prompts labeled '{label}'")
-            for idx in trange(0, len(prompt_list), self.batch_size):
+            logger.info(f"Calculating PPL for prompts labeled '{label}'")
+            for idx in trange(0, len(prompt_list), self.batch_size, disable=not self.is_main_process):
                 sub_prompt_list = prompt_list[idx:idx + self.batch_size]
                 with torch.no_grad():
                     sub_res = self.__get_ppl(sub_prompt_list).tolist()

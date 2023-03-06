@@ -1,4 +1,4 @@
-'''Simple Dataset Reader '''
+"""Simple Dataset Reader"""
 
 from typing import List, Union, Optional, Dict
 from datasets import load_dataset
@@ -9,7 +9,6 @@ from openicl.icl_prompt_template import PromptTemplate
 from openicl.utils.check_type import _check_dataset, _check_type_list, _check_str
 import random
 import torch
-
 
 class DatasetReader:
     """In-conext Learning Dataset Reader Class
@@ -193,7 +192,7 @@ class DatasetReader:
     
     
     def __repr__(self):
-        return f"IclDatasetReader({{\n    dataset: {self.dataset},\n    ctx_list: {self.input_columns},\n    pred_label: {self.output_column}\n}})"
+        return f"IclDatasetReader({{\n    dataset: {self.dataset},\n    input_columns: {self.input_columns},\n    output_columns: {self.output_column}\n}})"
     
     
 def load_partial_dataset(dataset: Dataset, size: Optional[Union[int, float]] = None) -> Dataset:
@@ -242,30 +241,4 @@ class DatasetEncoder(torch.utils.data.Dataset):
     
     def __getitem__(self, idx):
         return self.encode_dataset[idx]
-    
-
-# class IndexListReader(torch.utils.data.Dataset):
-#     def __init__(self, idx_list: List) -> None:
-#         self.idx_list = idx_list
-#         self.data_length = len(idx_list)
-#         self.idx_reader = []
-#         self.init_dataset()
-        
-    
-#     def init_dataset(self):
-#         for idx in range(self.data_length):
-#             self.idx_reader.append({
-#                 'metadata' :{
-#                     'idx_list': self.idx_list[idx],
-#                     'idx': idx
-#                 }
-#             })
-            
-            
-#     def __len__(self):
-#         return self.data_length
-    
-    
-#     def __getitem__(self, idx):
-#         return self.idx_reader[idx]
             

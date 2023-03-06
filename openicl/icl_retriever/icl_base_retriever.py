@@ -1,4 +1,4 @@
-'''Basic Retriever'''
+"""Basic Retriever"""
 
 from datasets import Dataset, DatasetDict
 from typing import List, Union, Optional, Tuple, Dict
@@ -42,6 +42,7 @@ class BaseRetriever:
         self.index_split = index_split
         self.test_split = test_split
         self.accelerator = accelerator
+        self.is_main_process = True if self.accelerator is None or self.accelerator.is_main_process else False
         if isinstance(self.dataset_reader.dataset, Dataset):
             self.index_ds = self.dataset_reader.dataset
             self.test_ds = self.dataset_reader.dataset

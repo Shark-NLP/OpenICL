@@ -1,14 +1,17 @@
-'''MDL retriever'''
+"""MDL Retriever"""
 
 from openicl import DatasetReader, PromptTemplate
 from openicl.icl_retriever import TopkRetriever
 from openicl.utils.calculate import entropy
+from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
 from typing import List, Union, Optional, Tuple
 from transformers import AutoModelForCausalLM
 import tqdm
 import torch
 import numpy as np
 from accelerate import Accelerator
+
+logger = get_logger(__name__)
 
 class MDLRetriever(TopkRetriever):
     """MDL In-context Learning Retriever Class
@@ -51,6 +54,8 @@ class MDLRetriever(TopkRetriever):
                  labels: Optional[List] = None
     ) -> None:
         super().__init__(dataset_reader, ice_separator, ice_eos_token, prompt_eos_token, sentence_transformers_model_name, ice_num, index_split, test_split, tokenizer_name, batch_size, accelerator)
+        if not self.is_main_process:
+            logger.setLevel(SUBPROCESS_LOG_LEVEL) 
         self.ce_model_name = ce_model_name
         self.candidate_num = candidate_num
         self.select_time = select_time
@@ -62,7 +67,9 @@ class MDLRetriever(TopkRetriever):
     def topk_search(self):
         res_list = self.forward(self.dataloader)
         rtr_idx_list = [[] for _ in range(len(res_list))]
-        for entry in tqdm.tqdm(res_list):
+        
+        logger.info("Retrieving data for test set...")
+        for entry in tqdm.tqdm(res_list, disable=not self.is_main_process):
             idx = entry['metadata']['id']
 
             embed = np.expand_dims(entry['embed'], axis=0)
@@ -102,7 +109,7 @@ class MDLRetriever(TopkRetriever):
         
     def cal_ce(self, input_texts: List[List], mask_length=None):
         if self.metric_model is None:
-            print("load metric model")
+            logger.info(f'Load model {self.metric_model} for calculating MDL...')
             self.metric_model = AutoModelForCausalLM.from_pretrained(self.ce_model_name)
             self.metric_model.to(self.device)
         inputs = self.tokenizer(input_texts, padding=True, return_tensors='pt', truncation=True)

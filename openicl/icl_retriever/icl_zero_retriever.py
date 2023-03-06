@@ -1,4 +1,4 @@
-'''Zeroshot Retriever'''
+"""Zeroshot Retriever"""
 
 from datasets import Dataset, DatasetDict
 from typing import List, Union, Optional, Tuple, Dict

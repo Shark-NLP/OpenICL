@@ -1,12 +1,13 @@
-'''Topk Retriever'''
+"""Topk Retriever"""
 
-from openicl import DatasetReader, PromptTemplate
+from openicl import DatasetReader
 from openicl.icl_dataset_reader import DatasetEncoder
 from openicl.icl_retriever import BaseRetriever
 from openicl.utils.collators import DataCollatorWithPaddingAndCuda
+from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
 import torch
 from torch.utils.data import DataLoader
-from typing import List, Union, Optional, Tuple
+from typing import Optional
 from transformers import AutoTokenizer
 from sentence_transformers import SentenceTransformer
 import tqdm
@@ -14,6 +15,8 @@ import faiss
 import copy
 import numpy as np
 from accelerate import Accelerator
+
+logger = get_logger(__name__)
 
 class TopkRetriever(BaseRetriever):
     """Topk In-context Learning Retriever Class
@@ -50,6 +53,9 @@ class TopkRetriever(BaseRetriever):
                  accelerator: Optional[Accelerator] = None
     ) -> None:
         super().__init__(dataset_reader, ice_separator, ice_eos_token, prompt_eos_token, ice_num, index_split, test_split, accelerator)
+        if not self.is_main_process:
+            logger.setLevel(SUBPROCESS_LOG_LEVEL)
+            
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
         self.batch_size = batch_size
         self.tokenizer_name = tokenizer_name
@@ -64,8 +70,6 @@ class TopkRetriever(BaseRetriever):
         co = DataCollatorWithPaddingAndCuda(tokenizer=self.tokenizer, device=self.device)
         self.dataloader = DataLoader(self.encode_dataset, batch_size=self.batch_size, collate_fn=co)
         
-        
-        print(f"Loading sentence transformers {sentence_transformers_model_name}...")
         self.model = SentenceTransformer(sentence_transformers_model_name)
         
         self.model = self.model.to(self.device)
@@ -90,8 +94,8 @@ class TopkRetriever(BaseRetriever):
     def knn_search(self, ice_num):
         res_list = self.forward(self.dataloader, process_bar=True, information="Embedding test set...")
         rtr_idx_list = [[] for _ in range(len(res_list))]
-        print("Retrieving data for test set...")
-        for entry in tqdm.tqdm(res_list):
+        logger.info("Retrieving data for test set...")
+        for entry in tqdm.tqdm(res_list, disable=not self.is_main_process):
             idx = entry['metadata']['id']
             embed = np.expand_dims(entry['embed'], axis=0)
             near_ids = self.index.search(embed, ice_num)[1][0].tolist()
@@ -103,8 +107,8 @@ class TopkRetriever(BaseRetriever):
         res_list = []
         _dataloader = copy.deepcopy(dataloader)
         if process_bar:
-            print(information)
-            _dataloader = tqdm.tqdm(_dataloader)
+            logger.info(information)
+            _dataloader = tqdm.tqdm(_dataloader, disable=not self.is_main_process)
         for _, entry in enumerate(_dataloader):
             with torch.no_grad():
                 metadata = entry.pop("metadata")

@@ -1,4 +1,4 @@
-'''Prompt Template'''
+"""Prompt Template"""
 
 from typing import Dict, Optional, Union, Hashable
 from .utils.check_type import _check_type_list, _check_dict
