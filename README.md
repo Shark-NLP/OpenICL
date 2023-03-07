@@ -8,7 +8,7 @@
   <a href="#overview">Overview</a> •
   <a href="#installation">Installation</a> •
   <a href="https://arxiv.org/abs/2303.02913">Paper</a> •
-  <a href="https://github.com/Shark-NLP/OpenICL/examaples">Examples</a> •
+  <a href="https://github.com/Shark-NLP/OpenICL/tree/main/examples">Examples</a> •
   <a href="#docs">Docs</a> •
   <a href="#citation">Citation</a> 
 </p>
