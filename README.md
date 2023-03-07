@@ -63,7 +63,7 @@ tp_dict = {
 
 template = PromptTemplate(tp_dict, {'text': '</text>'}, ice_token='</E>')
 ```
-The placeholder `</E>` and `</text>` will be replaced by in-contedt examples and testing input, respectively. 
+The placeholder `</E>` and `</text>` will be replaced by in-context examples and testing input, respectively. 
 
 #### Step 3: Initialize the Retriever
 ```python
