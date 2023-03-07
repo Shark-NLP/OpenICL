@@ -8,7 +8,7 @@
 <p align="center">
   <a href="#overview">Overview</a> •
   <a href="#installation">Installation</a> •
-  <a href="#supported-methods">Methods</a> •
+  <a href="https://arxiv.org/abs/2303.02913">Paper</a> •
   <a href="#docs">Docs</a> •
   <a href="#citation">Citation</a> 
 </p>
