@@ -5,9 +5,12 @@
 __pycache__/
 .cache/
 
-# Test file
+# Test files
 test.py
+test.sh
 
 # Config 
 openicl.egg-info/
+
+# Output files
 icl_inference_output/

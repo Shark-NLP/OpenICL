@@ -139,4 +139,12 @@ def test_bm25_mtop():
 coming soon...
 
 ## Citation
-coming soon...
+If you find this repository helpful, feel free to cite us:
+```bibtex
+@article{wu2023openicl,
+  title={OpenICL: An Open-Source Framework for In-context Learning},
+  author={Zhenyu Wu, Yaoxiang Wang, Jiacheng Ye, Jiangtao Feng, Jingjing Xu, Yu Qiao, Zhiyong Wu},
+  journal={arXiv preprint arXiv:2303.02913},
+  year={2023}
+}
+```
