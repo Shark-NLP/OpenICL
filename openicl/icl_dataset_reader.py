@@ -69,7 +69,20 @@ class DatasetReader:
                 self.references = self.dataset[test_split][self.output_column]
         elif isinstance(self.dataset, Dataset):
             self.references = self.dataset[self.output_column]
-                    
+    
+    
+    def set_references(self, column: str, split: Optional[str] = None) -> None:
+        """Set `self.references` based on `column` and optional `split`.
+
+        Args:
+            column (str): A string of column name.
+            split (str, optional): A string of dataset split. Defaults to None.
+        """        
+        if split is not None:
+            self.references = self.dataset[split][column]
+        else:
+            self.references = self.dataset[column] 
+    
     
     def generate_input_field_prompt(self, entry: Dict) -> str:
         """Generate a prompt for the input field based on the provided 'entry' data.
