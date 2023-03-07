@@ -87,7 +87,7 @@ class BaseInferencer:
                 empty_model = AutoModelForCausalLM.from_config(model_config)
             
             if device_map is None:
-                device_map = infer_auto_device_map(empty_model, no_split_module_classes=no_split_module_classes)
+                device_map = infer_auto_device_map(empty_model, no_split_module_classes=no_split_module_classes, dtype="float16")
             
             self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map, offload_folder="offload", offload_state_dict=True, torch_dtype=torch.float16)
             
