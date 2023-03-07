@@ -3,15 +3,18 @@
 </div>
 
 ------
-![version](https://img.shields.io/badge/version-0.1.0-blue)
 
 <p align="center">
   <a href="#overview">Overview</a> •
   <a href="#installation">Installation</a> •
   <a href="https://arxiv.org/abs/2303.02913">Paper</a> •
+  <a href="https://github.com/Shark-NLP/OpenICL/examaples">Examples</a> •
   <a href="#docs">Docs</a> •
   <a href="#citation">Citation</a> 
 </p>
+
+![version](https://img.shields.io/badge/version-0.1.0-blue)
+
 
 ## Overview
 OpenICL provides an easy interface for in-context learning, with many state-of-the-art retrieval and inference methods built in to facilitate systematic comparison of LMs and fast research prototyping. Users can easily incorporate different retrieval and inference methods, as well as different prompt instructions into their workflow. 
@@ -20,15 +23,15 @@ OpenICL provides an easy interface for in-context learning, with many state-of-t
 </div>
 
 ## Installation
-**Note: Please use Python 3.7+ for OpenICL**
+Note: OpenICL requires Python 3.7+
 
-### Using Pip
+**Using Pip**
 ```
 pip install openicl
 ```
 
-### Using Git
-Clone the repository from github:
+
+**Installation for local development:**
 ```
 git clone https://github.com/Shark-NLP/OpenICL
 cd OpenICL
@@ -36,7 +39,7 @@ pip install -e .
 ```
 
 ## Quick Start
-This example shows you how to perform ICL on sentiment classification dataset. 
+Following example shows you how to perform ICL on sentiment classification dataset.  More examples and tutorials can be found at [examples](https://github.com/Shark-NLP/OpenICL/examaples)
 
 #### Step 1: Load and prepare data
 ```python
@@ -80,10 +83,9 @@ inferencer = PPLInferencer(model_name='distilgpt2')
 #### Step 5: Inference and scoring
 ```python
 from openicl import AccEvaluator
-# In Step 3, we set `ice_token` for `template`.
-# Therefore, `template` serves as both `ice_template` and `prompt_template`
+# the inferencer requires retriever to collect in-context examples, as well as a template to wrap up these examples.
 predictions = inferencer.inference(retriever, ice_template=template)
-
+# compute accuracy for the prediction
 score = AccEvaluator().score(predictions=predictions, references=data.references)
 print(score)
 ```
