@@ -9,8 +9,11 @@ __pycache__/
 test.py
 test.sh
 
-# Config 
-openicl.egg-info/
-
 # Output files
 icl_inference_output/
+
+# Packages
+dist/
+.eggs/
+openicl.egg-info/
+build/
