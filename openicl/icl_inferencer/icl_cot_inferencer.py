@@ -57,11 +57,15 @@ class CoTInferencer(BaseInferencer):
         self.generation_kwargs = generation_kwargs
 
     
-    def inference(self, retriever: BaseRetriever, ice_template: Optional[PromptTemplate] = None, prompt_template: Optional[PromptTemplate] = None) -> List:
+    def inference(self, retriever: BaseRetriever, ice_template: Optional[PromptTemplate] = None, prompt_template: Optional[PromptTemplate] = None, output_json_filepath: Optional[str] = None, output_json_filename: Optional[str] = None) -> List:
         # 1. Preparation for output logs
         num = len(retriever.test_ds)
         output_handler = GenInferencerOutputHandler(num, self.accelerator)
         index = 0
+        if output_json_filepath is None:
+            output_json_filepath = self.output_json_filepath
+        if output_json_filename is None:
+            output_json_filename = self.output_json_filename
         
         # 2. Get results of retrieval process
         ice_idx_list = retriever.retrieve()
@@ -106,14 +110,14 @@ class CoTInferencer(BaseInferencer):
 
             # 4-3. Output for current step
             if cot_idx < cot_list_len:
-                filename = self.output_json_filename + f'_step{idx}'
+                filename = output_json_filename + f'_step{idx}'
             else:
-                filename = self.output_json_filename
-            output_handler.subprocess_write_to_json(self.output_json_filepath, filename)
+                filename = output_json_filename
+            output_handler.subprocess_write_to_json(output_json_filepath, filename)
             if self.accelerator is not None:
                 self.accelerator.wait_for_everyone()
-            output_handler.merge_to_main_process(self.output_json_filepath, filename)
-            output_handler.write_to_json(self.output_json_filepath, filename)
+            output_handler.merge_to_main_process(output_json_filepath, filename)
+            output_handler.write_to_json(output_json_filepath, filename)
 
             # 4-4. Check for next string in `self.cot_list`
             if cot_idx < cot_list_len:

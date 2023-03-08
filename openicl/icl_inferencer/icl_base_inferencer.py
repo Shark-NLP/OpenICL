@@ -70,7 +70,7 @@ class BaseInferencer:
             os.makedirs(self.output_json_filepath)
             
     
-    def inference(self, retriever: BaseRetriever, ice_template: Optional[PromptTemplate] = None, prompt_template: Optional[PromptTemplate] = None, references: Optional[List] = None) -> List:
+    def inference(self, retriever: BaseRetriever, ice_template: Optional[PromptTemplate] = None, prompt_template: Optional[PromptTemplate] = None, references: Optional[List] = None, output_json_filepath: Optional[str] = None, output_json_filename: Optional[str] = None) -> List:
         raise NotImplementedError("Method hasn't been implemented yet")
     
     

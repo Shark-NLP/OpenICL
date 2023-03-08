@@ -13,7 +13,7 @@
   <a href="#citation">Citation</a> 
 </p>
 
-![version](https://img.shields.io/badge/version-0.1.0-blue)
+![version](https://img.shields.io/badge/version-0.1.1-blue)
 
 
 ## Overview

@@ -20,7 +20,6 @@ rank_bm25==0.2.2
 requests==2.28.1
 scikit_learn==1.2.1
 sentence_transformers==2.2.2
-setuptools==65.5.0
 torch==1.13.1
 tqdm==4.64.1
 transformers==4.24.0
@@ -38,7 +37,7 @@ with open("README.md") as f:
 def do_setup():
     setup(
         name="openicl",
-        version = '0.1.0',
+        version = '0.1.1',
         description = "An open source framework for in-context learning.",
         url="https://github.com/Shark-NLP/OpenICL",
         author = 'Zhenyu Wu, Yaoxiang Wang, Zhiyong Wu, Jiacheng Ye',
