@@ -39,7 +39,7 @@ pip install -e .
 ```
 
 ## Quick Start
-Following example shows you how to perform ICL on sentiment classification dataset.  More examples and tutorials can be found at [examples](https://github.com/Shark-NLP/OpenICL/examaples)
+Following example shows you how to perform ICL on sentiment classification dataset.  More examples and tutorials can be found at [examples](https://github.com/Shark-NLP/OpenICL/tree/main/examples)
 
 #### Step 1: Load and prepare data
 ```python
@@ -63,7 +63,7 @@ tp_dict = {
 
 template = PromptTemplate(tp_dict, {'text': '</text>'}, ice_token='</E>')
 ```
-The placeholder `</E>` and `</text>` will be replaced by in-context examples and testing input, respectively. 
+The placeholder `</E>` and `</text>` will be replaced by in-context examples and testing input, respectively. For more detailed information about `PromptTemplate` (such as string-type template) , please see [tutorial1](https://github.com/Shark-NLP/OpenICL/blob/main/examples/tutorials/openicl_tutorial1_getting_started.ipynb).
 
 #### Step 3: Initialize the Retriever
 ```python
