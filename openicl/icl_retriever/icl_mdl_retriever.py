@@ -52,7 +52,8 @@ class MDLRetriever(TopkRetriever):
                  accelerator: Optional[Accelerator] = None,
                  ice_template: Optional[PromptTemplate] = None, 
                  prompt_template: Optional[PromptTemplate] = None,
-                 labels: Optional[List] = None
+                 labels: Optional[List] = None,
+                 seed: Optional[int] = 1
     ) -> None:
         super().__init__(dataset_reader, ice_separator, ice_eos_token, prompt_eos_token, sentence_transformers_model_name, ice_num, index_split, test_split, tokenizer_name, batch_size, accelerator)
         if not self.is_main_process:
@@ -63,9 +64,11 @@ class MDLRetriever(TopkRetriever):
         self.ice_template = ice_template
         self.prompt_template = prompt_template
         self.labels = labels
+        self.seed = seed
 
         
     def topk_search(self):
+        np.random.seed(self.seed)
         res_list = self.forward(self.dataloader)
         rtr_idx_list = [[] for _ in range(len(res_list))]
         
@@ -77,10 +80,13 @@ class MDLRetriever(TopkRetriever):
             near_ids = self.index.search(embed, min(self.candidate_num, len(self.index_ds)))[1][0].tolist()
             candidates = []
             mdl_scores = []
-            for _ in range(self.select_time):
-                rand_idx_list = np.random.choice(near_ids, self.ice_num, replace=False)
-                rand_idx_list = [int(i) for i in rand_idx_list]
-                candidates.append(rand_idx_list)
+            for j in range(self.select_time):
+                if j == 0:
+                    candidates.append(near_ids[:self.ice_num])
+                else:
+                    rand_idx_list = np.random.choice(near_ids, self.ice_num, replace=False)
+                    rand_idx_list = [int(i) for i in rand_idx_list]
+                    candidates.append(rand_idx_list)
                 
                 ice = self.generate_ice(rand_idx_list, ice_template=self.ice_template)
                 mask_length = len(self.tokenizer(ice+self.ice_eos_token, verbose=False)['input_ids'])
