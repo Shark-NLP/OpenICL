@@ -19,7 +19,7 @@ class RandomRetriever(BaseRetriever):
         ice_separator (str, optional): A string that separates each in-context example.
         ice_eos_token (str, optional): A string that is added to the end of in-context examples.
         prompt_eos_token (str, optional): A string that is added to the end of the prompt.
-        ice_num: The number of data in the in-context examples.
+        ice_num (int, optional): The number of data in the in-context examples.
         index_split (str, optional): A string for the index dataset name. The index dataset is used to select data for in-context examples. The default is 'train'.
         test_split (str, optional): A string for the generation dataset name. The test dataset is used to generate prompts for each data. The default is 'test'.
         index_ds (Dataset): The index dataset. Used to select data for in-context examples.
