@@ -73,7 +73,20 @@ class DPPRetriever(TopkRetriever):
             # DPP stage
             near_reps, rel_scores, kernel_matrix = self.get_kernel(embed, near_ids.tolist())
             dpp_L = FiniteDPP('likelihood', **{'L': kernel_matrix})
-            samples_ids = np.array(dpp_L.sample_exact_k_dpp(size=self.ice_num, random_state=self.seed))
+            
+            entry_legal_flag = False
+            seed = self.seed
+            while entry_legal_flag != True:
+                try:
+                    samples_ids = np.array(dpp_L.sample_exact_k_dpp(size=self.ice_num, random_state=self.seed))
+                except:
+                    seed = seed + 1
+                    logger.warning(f'illegal seed {seed} for this entry (processing test_set data {idx}), trying seed {seed + 1}')
+                    if (seed > 9999999):
+                        raise RuntimeError('Endless loop')
+                    continue
+                entry_legal_flag = True
+            
             
             # ordered by relevance score
             samples_scores = np.array([rel_scores[i] for i in samples_ids])
