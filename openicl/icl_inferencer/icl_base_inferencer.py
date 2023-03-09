@@ -5,7 +5,7 @@ import torch
 from openicl import BaseRetriever, PromptTemplate
 from openicl.utils.api_service import *
 from openicl.icl_evaluator import *
-from transformers import AutoTokenizer, AutoModelForCausalLM, PretrainedConfig, GPT2Tokenizer, AutoConfig
+from transformers import AutoTokenizer, AutoModelForCausalLM, PretrainedConfig, GPT2Tokenizer, AutoConfig, T5ForConditionalGeneration
 from typing import List, Union, Optional
 from accelerate import Accelerator
 from accelerate import init_empty_weights, infer_auto_device_map
@@ -77,9 +77,9 @@ class BaseInferencer:
     def __init_model(self, model_name, model_config, model_parallel, device_map, no_split_module_classes):
         if not model_parallel:
             if model_config is not None:
-                self.model = AutoModelForCausalLM.from_config(model_config)
+                self.model = self.__get_hf_model_from_config(model_name, model_config)
             else:
-                self.model = AutoModelForCausalLM.from_pretrained(model_name)
+                self.model = self.__get_hf_model_from_name(model_name)
         else:
             if model_config is None:
                 model_config = AutoConfig.from_pretrained(model_name)
@@ -90,7 +90,19 @@ class BaseInferencer:
                 device_map = infer_auto_device_map(empty_model, no_split_module_classes=no_split_module_classes, dtype="float16")
             
             self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map, offload_folder="offload", offload_state_dict=True, torch_dtype=torch.float16)
-            
+
+    
+    def __get_hf_model_from_name(self, model_name):
+        if 't5' in model_name:
+            return T5ForConditionalGeneration.from_pretrained(model_name)
+        else:
+            return AutoModelForCausalLM.from_pretrained(model_name)
+
+    def __get_hf_model_from_config(self, model_name, model_config):
+        if 't5' in model_name:
+            raise TypeError("T5 model has no 'from_config' method")
+        else:
+            return AutoModelForCausalLM.from_config(model_config)
 
     def __init_tokenizer(self, tokenizer_name):
         if self.api_name == 'opt-175b':

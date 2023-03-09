@@ -83,6 +83,8 @@ class GenInferencer(BaseInferencer):
                 with torch.no_grad():
                     tokenized_data = self.tokenizer.batch_encode_plus(entry, padding=True, return_tensors='pt').to(self.device)
                     prompt_len = int(tokenized_data.attention_mask.shape[1])
+                    if 't5' in self.model_name:
+                        prompt_len = 0
                     outputs = self.model.generate(input_ids=tokenized_data.input_ids,
                                                 attention_mask=tokenized_data.attention_mask,
                                                 eos_token_id=self.tokenizer.eos_token_id,
