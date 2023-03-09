@@ -106,6 +106,8 @@ class CoTInferencer(BaseInferencer):
                 
                 # 4-2-3. Save current output
                 for prediction, output in zip(generated, complete_output): 
+                    if 't5' in self.model_name:
+                        output = prompt_list[index] + output
                     output_handler.save_prediction_and_output(prediction, output, index)
                     prompt_list[index] = output
                     index = index + 1
