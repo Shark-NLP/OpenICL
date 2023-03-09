@@ -80,8 +80,8 @@ class DPPRetriever(TopkRetriever):
                 try:
                     samples_ids = np.array(dpp_L.sample_exact_k_dpp(size=self.ice_num, random_state=self.seed))
                 except:
-                    seed = seed + 1
                     logger.warning(f'illegal seed {seed} for this entry (processing test_set data {idx}), trying seed {seed + 1}')
+                    seed = seed + 1
                     if (seed > 9999999):
                         raise RuntimeError('Endless loop')
                     continue
