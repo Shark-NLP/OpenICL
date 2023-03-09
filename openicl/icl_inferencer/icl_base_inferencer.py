@@ -54,7 +54,7 @@ class BaseInferencer:
         no_split_module_classes = kwargs['no_split_module_classes']
         device_map = kwargs['device_map']
 
-        self.__init_api()
+        self.__init_api(**kwargs)
         if not self.call_api:
             self.__init_model(self.model_name, model_config, model_parallel, device_map, no_split_module_classes)
             self.__init_tokenizer(self.tokenizer_name)
@@ -114,12 +114,14 @@ class BaseInferencer:
         self.tokenizer.padding_side = "left"
         
     
-    def __init_api(self):
+    def __init_api(self, **kwargs):
         if self.api_name == None:
             return
         self.call_api = is_api_available(self.api_name)
         if not self.call_api:
             UserWarning(f"api_name '{self.api_name}' is not available, Please check it")
+        else:
+            update_openicl_api_request_config(self.api_name, **kwargs)
     
         
     def get_input_token_num(self, inputs):
