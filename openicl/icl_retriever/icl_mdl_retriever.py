@@ -82,11 +82,11 @@ class MDLRetriever(TopkRetriever):
             mdl_scores = []
             for j in range(self.select_time):
                 if j == 0:
-                    candidates.append(near_ids[:self.ice_num])
+                    rand_idx_list = near_ids[:self.ice_num]
                 else:
                     rand_idx_list = np.random.choice(near_ids, self.ice_num, replace=False)
                     rand_idx_list = [int(i) for i in rand_idx_list]
-                    candidates.append(rand_idx_list)
+                candidates.append(rand_idx_list)
                 
                 ice = self.generate_ice(rand_idx_list, ice_template=self.ice_template)
                 mask_length = len(self.tokenizer(ice+self.ice_eos_token, verbose=False)['input_ids'])
