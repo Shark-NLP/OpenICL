@@ -1,6 +1,5 @@
 import json
 import requests
-import torch
 import os
 import openai
 import time
@@ -36,9 +35,11 @@ def is_api_available(api_name):
         return False
     return True if api_name in OPENICL_API_NAME_LIST else False
 
+
 def update_openicl_api_request_config(api_name, **kwargs):
     if api_name == None or not is_api_available(api_name):
         return
+    
     parameter_list = OPENICL_API_PARAMETER_DICT[api_name]
     for parameter in parameter_list:
         if parameter in kwargs.keys():
@@ -60,11 +61,13 @@ def api_get_ppl(api_name, input_texts):
 
 def api_get_tokens(api_name, input_texts):
     length_list = [len(text) for text in input_texts]
+    
     if api_name == 'opt-175b':
         pyload = {"prompt": input_texts, "max_tokens": 100, "echo": True}
         response = json.loads(
                 requests.post(OPENICL_API_REQUEST_CONFIG[api_name]['URL'], data=json.dumps(pyload), headers=OPENICL_API_REQUEST_CONFIG[api_name]['headers'], proxies=PROXIES).text)
         return [r['text'] for r in response['choices']], [r['text'][length:] for r, length in zip(response['choices'], length_list)]
+    
     if api_name == 'gpt3':
         openai.api_key = os.getenv("OPENAI_API_KEY")
         response = openai.Completion.create(
@@ -78,5 +81,4 @@ def api_get_tokens(api_name, input_texts):
         )
         time.sleep(OPENICL_API_REQUEST_CONFIG['gpt3']['sleep_time'])
         return [(input + r['text']) for r, input in zip(response['choices'], input_texts)], [r['text'] for r in response['choices']]
-    
     
