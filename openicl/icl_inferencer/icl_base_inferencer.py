@@ -139,6 +139,10 @@ class GenInferencerOutputHandler:
     ) -> None:
         self.num = num
         self.accelerator = accelerator
+        self.origin_prompt_dict= {}
+        self.output_dict = {}
+        self.prediction_dict = {}
+        self.results_dict = {}
                 
     
     def subprocess_write_to_json(self, output_json_filepath: str, output_json_filename: str):
@@ -152,11 +156,13 @@ class GenInferencerOutputHandler:
         if self.accelerator is not None:
             with open(f'{output_json_filepath}/process{self.accelerator.process_index}_{output_json_filename}.json', 'w', encoding='utf-8') as json_file:
                 json.dump(self.results_dict, json_file, indent=4, ensure_ascii=False)
+                json_file.close()
 
 
     def write_to_json(self, output_json_filepath: str, output_json_filename: str):
         with open(f'{output_json_filepath}/{output_json_filename}.json', 'w', encoding='utf-8') as json_file:
             json.dump(self.results_dict, json_file, indent=4, ensure_ascii=False)
+            json_file.close()
             
             
     def merge_to_main_process(self, output_json_filepath: str, output_json_filename: str):
@@ -165,6 +171,7 @@ class GenInferencerOutputHandler:
                 with open(f'{output_json_filepath}/process{pid}_{output_json_filename}.json', 'r', encoding='utf-8') as json_file:
                     subprocess_results_dict = json.load(json_file)
                     self.results_dict.update(subprocess_results_dict)
+                    json_file.close()
     
     
     def save_orgin_prompts(self, origin_prompts: List[str]):
@@ -187,17 +194,19 @@ class PPLInferencerOutputHandler:
                  accelerator: Optional[Accelerator] = None
     ) -> None:
         self.accelerator = accelerator
-    
+        self.results_dict = {}
     
     def subprocess_write_to_json(self, output_json_filepath: str, output_json_filename: str):
         if self.accelerator is not None:
             with open(f'{output_json_filepath}/process{self.accelerator.process_index}_{output_json_filename}.json', 'w', encoding='utf-8') as json_file:
                 json.dump(self.results_dict, json_file, indent=4, ensure_ascii=False)
+                json_file.close()
     
     
     def write_to_json(self, output_json_filepath: str, output_json_filename: str):
         with open(f'{output_json_filepath}/{output_json_filename}.json', 'w', encoding='utf-8') as json_file:
             json.dump(self.results_dict, json_file, indent=4, ensure_ascii=False)
+            json_file.close()
 
 
     def merge_to_main_process(self, output_json_filepath: str, output_json_filename: str):
@@ -206,6 +215,7 @@ class PPLInferencerOutputHandler:
                 with open(f'{output_json_filepath}/process{pid}_{output_json_filename}.json', 'r', encoding='utf-8') as json_file:
                     subprocess_results_dict = json.load(json_file)
                     self.results_dict.update(subprocess_results_dict)
+                    json_file.close()
                     
                     
     def save_ice(self, ice):
