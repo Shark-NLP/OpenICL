@@ -38,7 +38,7 @@ with open("README.md") as f:
 def do_setup():
     setup(
         name="openicl",
-        version = '0.1.3',
+        version = '0.1.4',
         description = "An open source framework for in-context learning.",
         url="https://github.com/Shark-NLP/OpenICL",
         author = 'Zhenyu Wu, Yaoxiang Wang, Zhiyong Wu, Jiacheng Ye',
