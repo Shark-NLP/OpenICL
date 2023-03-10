@@ -2,7 +2,7 @@
 
 from openicl import DatasetReader
 from openicl.icl_retriever import BaseRetriever
-from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
+from openicl.utils.logging import get_logger
 from typing import List, Union, Optional
 from tqdm import trange
 import numpy as np
@@ -40,8 +40,6 @@ class RandomRetriever(BaseRetriever):
     ) -> None:
         super().__init__(dataset_reader, ice_separator, ice_eos_token, prompt_eos_token, ice_num, index_split, test_split, accelerator)
         self.seed = seed
-        if not self.is_main_process:
-            logger.setLevel(SUBPROCESS_LOG_LEVEL)
         
         
     def retrieve(self):

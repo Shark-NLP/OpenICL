@@ -8,7 +8,7 @@ from openicl.icl_evaluator import *
 from openicl.icl_inferencer.icl_base_inferencer import BaseInferencer, GenInferencerOutputHandler
 from openicl.utils.api_service import * 
 from openicl.utils.icl_common_utils import get_dataloader, get_generation_prompt_list_from_retriever_indices
-from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
+from openicl.utils.logging import get_logger
 from typing import List, Union, Optional
 from tqdm import tqdm
 from transformers import PretrainedConfig
@@ -48,8 +48,6 @@ class GenInferencer(BaseInferencer):
                  **kwargs
     ) -> None:
         super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)
-        if not self.is_main_process:
-            logger.setLevel(SUBPROCESS_LOG_LEVEL)
         self.gen_field_replace_token = gen_field_replace_token
         self.generation_kwargs = generation_kwargs
         

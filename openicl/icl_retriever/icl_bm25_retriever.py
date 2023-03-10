@@ -2,7 +2,7 @@
 
 from openicl import DatasetReader, PromptTemplate
 from openicl.icl_retriever import BaseRetriever
-from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
+from openicl.utils.logging import get_logger
 from typing import List, Union, Optional
 from rank_bm25 import BM25Okapi
 import numpy as np
@@ -45,8 +45,6 @@ class BM25Retriever(BaseRetriever):
                  accelerator: Optional[Accelerator] = None
     ) -> None:
         super().__init__(dataset_reader, ice_separator, ice_eos_token, prompt_eos_token, ice_num, index_split, test_split, accelerator)
-        if not self.is_main_process:
-            logger.setLevel(SUBPROCESS_LOG_LEVEL)
         self.index_corpus = [word_tokenize(data) for data in self.dataset_reader.generate_input_field_corpus(self.index_ds)]
         self.bm25 = BM25Okapi(self.index_corpus)
         self.test_corpus = [word_tokenize(data) for data in self.dataset_reader.generate_input_field_corpus(self.test_ds)]

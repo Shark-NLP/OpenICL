@@ -6,7 +6,7 @@ from openicl import PromptTemplate
 from openicl.icl_retriever import *
 from openicl.icl_evaluator import *
 from openicl.icl_inferencer.icl_base_inferencer import BaseInferencer, PPLInferencerOutputHandler
-from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
+from openicl.utils.logging import get_logger
 from openicl.utils.api_service import *
 from typing import List, Union, Optional
 from tqdm import tqdm
@@ -46,8 +46,6 @@ class PPLInferencer(BaseInferencer):
                  **kwargs
     ) -> None:
         super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)
-        if not self.is_main_process:
-            logger.setLevel(SUBPROCESS_LOG_LEVEL)
         self.labels = labels
 
 

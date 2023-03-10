@@ -3,7 +3,7 @@
 from openicl import DatasetReader, PromptTemplate
 from openicl.icl_retriever.icl_topk_retriever import TopkRetriever
 from openicl.utils.calculate import entropy
-from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
+from openicl.utils.logging import get_logger
 from typing import List, Union, Optional, Tuple
 from transformers import AutoModelForCausalLM
 import tqdm
@@ -56,8 +56,6 @@ class MDLRetriever(TopkRetriever):
                  seed: Optional[int] = 1
     ) -> None:
         super().__init__(dataset_reader, ice_separator, ice_eos_token, prompt_eos_token, sentence_transformers_model_name, ice_num, index_split, test_split, tokenizer_name, batch_size, accelerator)
-        if not self.is_main_process:
-            logger.setLevel(SUBPROCESS_LOG_LEVEL) 
         self.ce_model_name = ce_model_name
         self.candidate_num = candidate_num
         self.select_time = select_time

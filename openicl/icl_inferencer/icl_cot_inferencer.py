@@ -10,7 +10,7 @@ from tqdm import tqdm
 from transformers import PretrainedConfig
 from openicl.utils.api_service import * 
 from openicl.utils.icl_common_utils import get_dataloader, get_generation_prompt_list_from_retriever_indices
-from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
+from openicl.utils.logging import get_logger
 from accelerate import Accelerator
 
 logger = get_logger(__name__)
@@ -49,9 +49,7 @@ class CoTInferencer(BaseInferencer):
                  model_parallel: Optional[bool] = False,
                  **kwargs
     ) -> None:
-        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)
-        if not self.is_main_process:
-            logger.setLevel(SUBPROCESS_LOG_LEVEL)    
+        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)  
         self.cot_list = cot_list
         self.gen_field_replace_token = gen_field_replace_token
         self.generation_kwargs = generation_kwargs

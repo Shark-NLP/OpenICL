@@ -2,7 +2,7 @@
 
 from openicl import DatasetReader
 from openicl.icl_retriever.icl_topk_retriever import TopkRetriever
-from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
+from openicl.utils.logging import get_logger
 from typing import Optional
 from dppy.finite_dpps import FiniteDPP
 import tqdm
@@ -52,8 +52,6 @@ class DPPRetriever(TopkRetriever):
                  scale_factor: Optional[float] = 0.1
     ) -> None:
         super().__init__(dataset_reader, ice_separator, ice_eos_token, prompt_eos_token, sentence_transformers_model_name, ice_num, index_split, test_split, tokenizer_name, batch_size, accelerator) 
-        if not self.is_main_process:
-            logger.setLevel(SUBPROCESS_LOG_LEVEL)
         self.candidate_num = candidate_num
         self.seed = seed
         self.scale_factor = scale_factor

@@ -4,7 +4,7 @@ from openicl import DatasetReader
 from openicl.icl_dataset_reader import DatasetEncoder
 from openicl.icl_retriever import BaseRetriever
 from openicl.utils.collators import DataCollatorWithPaddingAndCuda
-from openicl.utils.logging import get_logger, SUBPROCESS_LOG_LEVEL
+from openicl.utils.logging import get_logger
 import torch
 from torch.utils.data import DataLoader
 from typing import Optional
@@ -53,9 +53,6 @@ class TopkRetriever(BaseRetriever):
                  accelerator: Optional[Accelerator] = None
     ) -> None:
         super().__init__(dataset_reader, ice_separator, ice_eos_token, prompt_eos_token, ice_num, index_split, test_split, accelerator)
-        if not self.is_main_process:
-            logger.setLevel(SUBPROCESS_LOG_LEVEL)
-            
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.batch_size = batch_size
         self.tokenizer_name = tokenizer_name
