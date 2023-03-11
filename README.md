@@ -23,7 +23,7 @@ OpenICL provides an easy interface for in-context learning, with many state-of-t
 </div>
 
 ## Installation
-Note: OpenICL requires Python 3.7+
+Note: OpenICL requires Python 3.8+
 
 **Using Pip**
 ```
