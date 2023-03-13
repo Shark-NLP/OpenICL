@@ -1,13 +1,13 @@
-'''Acc Evaluator'''
+"""Acc Evaluator"""
 from openicl.icl_evaluator import BaseEvaluator
 from typing import List
 import evaluate
 
+
 class AccEvaluator(BaseEvaluator):
     def __init__(self) -> None:
         super().__init__()
-        
-        
+
     def score(self, predictions, references):
         assert len(predictions) == len(references)
         mapping_to_int_dict = {label: idx for idx, label in enumerate(set(map(str, references)))}
@@ -19,4 +19,3 @@ class AccEvaluator(BaseEvaluator):
         preds = [mapping_to_int_dict[str(pred)] for pred in predictions]
         metric = evaluate.load("accuracy")
         return metric.compute(references=golds, predictions=preds)
-    

@@ -10,6 +10,7 @@ from openicl.utils.check_type import _check_dataset, _check_type_list, _check_st
 import random
 import torch
 
+
 class DatasetReader:
     """In-conext Learning Dataset Reader Class
         Generate an DatasetReader instance through 'dataset'.
@@ -29,10 +30,11 @@ class DatasetReader:
     output_template = None
     input_output_template = None
     references = None
-    def __init__(self, 
-                 dataset: Union[Dataset, DatasetDict, str], 
-                 input_columns: Union[List[str], str], 
-                 output_column: str, 
+
+    def __init__(self,
+                 dataset: Union[Dataset, DatasetDict, str],
+                 input_columns: Union[List[str], str],
+                 output_column: str,
                  name: Optional[str] = None,
                  data_files: Optional[str] = None,
                  input_template: Optional[PromptTemplate] = None,
@@ -40,8 +42,8 @@ class DatasetReader:
                  input_output_template: Optional[PromptTemplate] = None,
                  ds_size: Union[None, int, float] = None,
                  split: Optional[NamedSplit] = None,
-                 test_split: Optional[str] = 'test' 
-    ) -> None:
+                 test_split: Optional[str] = 'test'
+                 ) -> None:
         self.input_columns = _check_type_list(input_columns, [List, str])
         if isinstance(self.input_columns, str):
             self.input_columns = self.input_columns.split()
@@ -70,21 +72,19 @@ class DatasetReader:
                 self.references = self.dataset[test_split][self.output_column]
         elif isinstance(self.dataset, Dataset):
             self.references = self.dataset[self.output_column]
-    
-    
+
     def set_references(self, column: str, split: Optional[str] = None) -> None:
         """Set :obj:`self.references` based on :obj:`column` and optional :obj:`split`.
 
         Args:
             column (:obj:`str`): A string of column name.
             split (:obj:`str`, optional): A string of dataset split. Defaults to ``None``.
-        """        
+        """
         if split is not None:
             self.references = self.dataset[split][column]
         else:
-            self.references = self.dataset[column] 
-    
-    
+            self.references = self.dataset[column]
+
     def generate_input_field_prompt(self, entry: Dict) -> str:
         """Generate a prompt for the input field based on the provided :obj:`entry` data.
 
@@ -93,16 +93,16 @@ class DatasetReader:
 
         Returns:
             :obj:`str`: The generated prompt.
-        """        
+        """
         prompt = None
         if self.input_template is None:
             prompt = ' '.join([str(entry[ctx]) for ctx in self.input_columns])
         else:
             prompt = self.input_template.generate_item(entry)
         return prompt
-    
-    
-    def generate_input_field_corpus(self, dataset: Union[Dataset, DatasetDict], split: Optional[str] = None) -> List[str]:
+
+    def generate_input_field_corpus(self, dataset: Union[Dataset, DatasetDict], split: Optional[str] = None) -> List[
+        str]:
         """Generate corpus for input field.
 
         Args:
@@ -111,15 +111,14 @@ class DatasetReader:
 
         Returns:
             :obj:`List[str]`: A list of generated input field prompts.
-        """        
+        """
         if split is not None:
             dataset = dataset[split]
         corpus = []
         for entry in dataset:
             corpus.append(self.generate_input_field_prompt(entry))
         return corpus
-    
-    
+
     def generate_ouput_field_prompt(self, entry: Dict) -> str:
         """Generate a prompt for the output field based on the provided :obj:`entry` data.
 
@@ -135,9 +134,9 @@ class DatasetReader:
         else:
             prompt = self.output_template.generate_item(entry)
         return prompt
-        
-    
-    def generate_output_field_corpus(self, dataset: Union[Dataset, DatasetDict], split: Optional[str] = None) -> List[str]:
+
+    def generate_output_field_corpus(self, dataset: Union[Dataset, DatasetDict], split: Optional[str] = None) -> List[
+        str]:
         """Generate corpus for output field.
 
         Args:
@@ -153,8 +152,7 @@ class DatasetReader:
         for entry in dataset:
             corpus.append(self.generate_ouput_field_prompt(entry))
         return corpus
-    
-    
+
     def generate_input_output_field_prompt(self, entry: Dict) -> str:
         """Generate a prompt for the input-output field based on the provided:obj:`entry` data.
 
@@ -169,10 +167,10 @@ class DatasetReader:
             prompt = ' '.join([entry[ctx] for ctx in self.input_columns] + [str(entry[self.output_column])])
         else:
             prompt = self.input_output_template.generate_item(entry)
-        return prompt      
-    
+        return prompt
 
-    def generate_input_output_field_corpus(self, dataset: Union[Dataset, DatasetDict], split: Optional[str] = None) -> List[str]:
+    def generate_input_output_field_corpus(self, dataset: Union[Dataset, DatasetDict], split: Optional[str] = None) -> \
+    List[str]:
         """Generate corpus for input-output field.
 
         Args:
@@ -187,28 +185,24 @@ class DatasetReader:
         corpus = []
         for entry in dataset:
             corpus.append(self.generate_input_output_field_prompt(entry))
-        return corpus  
-                    
-    
+        return corpus
+
     def _check_dataset_reader(obj) -> "DatasetReader":
         if isinstance(obj, DatasetReader):
             return obj
         else:
-            raise TypeError(f"Expected a DatasetReader object, but got {obj}") 
-        
-            
+            raise TypeError(f"Expected a DatasetReader object, but got {obj}")
+
     def __len__(self):
         return len(self.dataset)
-    
-    
+
     def __getitem__(self, idx):
         return self.dataset[idx]
-    
-    
+
     def __repr__(self):
         return f"DatasetReader({{\n    dataset: {self.dataset},\n    input_columns: {self.input_columns},\n    output_columns: {self.output_column}\n}})"
-    
-    
+
+
 def load_partial_dataset(dataset: Dataset, size: Optional[Union[int, float]] = None) -> Dataset:
     total_size = len(dataset)
     if size >= total_size or size <= 0:
@@ -223,13 +217,13 @@ def load_partial_dataset(dataset: Dataset, size: Optional[Union[int, float]] = N
 
 
 class DatasetEncoder(torch.utils.data.Dataset):
-    def __init__(self, datalist: List, model_name = None, tokenizer = None) -> None:
+    def __init__(self, datalist: List, model_name=None, tokenizer=None) -> None:
         self.datalist = datalist
         if model_name is None and tokenizer is None:
             raise ValueError("model_name and tokenizer could not both be None")
         if tokenizer is not None:
             self.tokenizer = tokenizer
-        else: 
+        else:
             self.tokenizer = AutoTokenizer.from_pretrained(model_name)
             self.tokenizer.pad_token = self.tokenizer.eos_token
             self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
@@ -237,7 +231,7 @@ class DatasetEncoder(torch.utils.data.Dataset):
         self.encode_dataset = []
         self.init_dataset()
         self.datalist_length = len(self.encode_dataset)
-    
+
     def init_dataset(self):
         for idx, data in enumerate(self.datalist):
             tokenized_data = self.tokenizer.encode_plus(data, truncation=True, return_tensors='pt', verbose=False)
@@ -245,14 +239,11 @@ class DatasetEncoder(torch.utils.data.Dataset):
                 'input_ids': tokenized_data.input_ids[0],
                 'attention_mask': tokenized_data.attention_mask[0],
                 "metadata": {"id": idx, "len": len(tokenized_data.input_ids[0]),
-                     "text": data}
+                             "text": data}
             })
-            
-            
+
     def __len__(self):
         return self.datalist_length
-    
-    
+
     def __getitem__(self, idx):
         return self.encode_dataset[idx]
-            

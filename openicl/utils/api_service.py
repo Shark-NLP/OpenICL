@@ -31,13 +31,13 @@ PROXIES = {"https": "", "http": ""}
 
 
 def is_api_available(api_name):
-    if api_name == None:
+    if api_name is None:
         return False
     return True if api_name in OPENICL_API_NAME_LIST else False
 
 
 def update_openicl_api_request_config(api_name, **kwargs):
-    if api_name == None or not is_api_available(api_name):
+    if api_name is None or not is_api_available(api_name):
         return
 
     parameter_list = OPENICL_API_PARAMETER_DICT[api_name]
