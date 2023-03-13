@@ -9,11 +9,11 @@
   <a href="#installation">Installation</a> •
   <a href="https://arxiv.org/abs/2303.02913">Paper</a> •
   <a href="https://github.com/Shark-NLP/OpenICL/tree/main/examples">Examples</a> •
-  <a href="#docs">Docs</a> •
+  <a href="https://openicl.readthedocs.io/en/latest/index.html">Docs</a> •
   <a href="#citation">Citation</a> 
 </p>
 
-![version](https://img.shields.io/badge/version-0.1.4-blue)
+![version](https://img.shields.io/badge/version-0.1.5-blue)
 
 
 ## Overview
@@ -93,7 +93,9 @@ print(score)
 
 
 ## Docs
-coming soon...
+**(updating...)**
+
+[OpenICL Documentation](https://openicl.readthedocs.io/en/latest/index.html)
 
 ## Citation
 If you find this repository helpful, feel free to cite our paper:
