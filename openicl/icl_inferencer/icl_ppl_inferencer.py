@@ -16,6 +16,7 @@ from accelerate import Accelerator
 
 logger = get_logger(__name__)
 
+
 class PPLInferencer(BaseInferencer):
     """PPL In-context Learning Inferencer Class
         Perplexity-based In-context Learning Inferencer.
@@ -31,7 +32,8 @@ class PPLInferencer(BaseInferencer):
         api_name (:obj:`str`, optional): Name of API service. 
         call_api (:obj:`bool`): If ``True``, an API for LM models will be used, determined by :obj:`api_name`.   
         labels (:obj:`List`, optional): A list of labels for all classes.
-    """    
+    """
+
     def __init__(self,
                  model_name: Optional[str] = 'gpt2-xl',
                  tokenizer_name: Optional[str] = None,
@@ -45,15 +47,17 @@ class PPLInferencer(BaseInferencer):
                  labels: Optional[List] = None,
                  model_parallel: Optional[bool] = False,
                  **kwargs
-    ) -> None:
-        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator, output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)
+                 ) -> None:
+        super().__init__(model_name, tokenizer_name, max_model_token_num, model_config, batch_size, accelerator,
+                         output_json_filepath, output_json_filename, api_name, model_parallel, **kwargs)
         self.labels = labels
 
-
-    def inference(self, retriever: BaseRetriever, ice_template: Optional[PromptTemplate] = None, prompt_template: Optional[PromptTemplate] = None, output_json_filepath: Optional[str] = None, output_json_filename: Optional[str] = None) -> List:
+    def inference(self, retriever: BaseRetriever, ice_template: Optional[PromptTemplate] = None,
+                  prompt_template: Optional[PromptTemplate] = None, output_json_filepath: Optional[str] = None,
+                  output_json_filename: Optional[str] = None) -> List:
         # 1. Preparation for output logs
         output_handler = PPLInferencerOutputHandler(self.accelerator)
-        
+
         sub_predictions = []
         ppl = []
         ice = []
@@ -63,16 +67,16 @@ class PPLInferencer(BaseInferencer):
             output_json_filepath = self.output_json_filepath
         if output_json_filename is None:
             output_json_filename = self.output_json_filename
-            
+
         # 2. Get results of retrieval process
         ice_idx_list = retriever.retrieve()
-        
+
         # 3. Get labels of all the classes
         if self.labels is None:
-            labels = retriever.get_labels(ice_template=ice_template, prompt_template=prompt_template)    
+            labels = retriever.get_labels(ice_template=ice_template, prompt_template=prompt_template)
         else:
             labels = self.labels
-        
+
         # 4. Generate in-context examples for testing inputs
         for idx in range(len(ice_idx_list)):
             ice.append(retriever.generate_ice(ice_idx_list[idx], ice_template=ice_template))
@@ -83,19 +87,21 @@ class PPLInferencer(BaseInferencer):
             index = 0
             prompt_list = []
             sub_ppl_list = []
-            
+
             # 5.1 Generate prompts of current label and truncate 
             for idx in range(len(ice_idx_list)):
-                prompt = retriever.generate_label_prompt(idx, ice[idx], label, ice_template=ice_template, prompt_template=prompt_template)
+                prompt = retriever.generate_label_prompt(idx, ice[idx], label, ice_template=ice_template,
+                                                         prompt_template=prompt_template)
                 if self.max_model_token_num is not None:
                     prompt_token_num = self.get_input_token_num(prompt)
                     while len(ice_idx_list[idx]) > 0 and prompt_token_num > self.max_model_token_num:
-                            ice_idx_list[idx] = ice_idx_list[idx][:-1]
-                            ice[idx] = retriever.generate_ice(ice_idx_list[idx], ice_template=ice_template)
-                            prompt = retriever.generate_label_prompt(idx, ice[idx], label, ice_template=ice_template, prompt_template=prompt_template)
-                            prompt_token_num = self.get_input_token_num(prompt)
+                        ice_idx_list[idx] = ice_idx_list[idx][:-1]
+                        ice[idx] = retriever.generate_ice(ice_idx_list[idx], ice_template=ice_template)
+                        prompt = retriever.generate_label_prompt(idx, ice[idx], label, ice_template=ice_template,
+                                                                 prompt_template=prompt_template)
+                        prompt_token_num = self.get_input_token_num(prompt)
                 prompt_list.append(prompt)
-            
+
             # 5.2 Get PPL
             logger.info(f"Calculating PPL for prompts labeled '{label}'")
             for idx in trange(0, len(prompt_list), self.batch_size, disable=not self.is_main_process):
@@ -120,9 +126,8 @@ class PPLInferencer(BaseInferencer):
             self.accelerator.wait_for_everyone()
         output_handler.merge_to_main_process(output_json_filepath, output_json_filename)
         output_handler.write_to_json(output_json_filepath, output_json_filename)
-        
-        return [sample['prediction'] for sample in output_handler.results_dict.values()]
 
+        return [sample['prediction'] for sample in output_handler.results_dict.values()]
 
     def __get_ppl(self, input_texts: List[str]):
         if self.call_api:
@@ -137,7 +142,7 @@ class PPLInferencer(BaseInferencer):
 
         loss_fct = torch.nn.CrossEntropyLoss(reduction='none', ignore_index=self.tokenizer.pad_token_id)
         loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1)).view(
-        shift_labels.size())
+            shift_labels.size())
 
         lens = (inputs["input_ids"] != self.tokenizer.pad_token_id).sum(-1).cpu().numpy()
         ce_loss = loss.sum(-1).cpu().detach().numpy() / lens
