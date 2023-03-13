@@ -21,15 +21,16 @@ class PPLInferencer(BaseInferencer):
         Perplexity-based In-context Learning Inferencer.
         
     Attributes:
-        model (AutoModelForCausalLM, optional): Local PLM (loaded from Hugging Face), which can be initialized by name or a config class. 
-        tokenizer (AutoTokenizer or GPT2Tokenizer, optional): Tokenizer for `model`.
-        max_model_token_num (int, optional): Maximum number of tokenized words allowed by the LM. 
-        batch_size (int, optional): Batch size for the `DataLoader`. 
-        accelerator (Accelerator, optional): An instance of the `Accelerator` class, used for multiprocessing.
-        output_json_filepath (str, optional): File path for output JSON file. 
-        output_json_filename (str, optional): File name for output JSON file. 
-        call_api (bool, optional): If True, an API for LM models will be used.   
-        labels (List, optional): A list of labels for all classes.
+        model (:obj:`AutoModelForCausalLM`, optional): Local PLM (loaded from Hugging Face), which can be initialized by name or a config class. 
+        tokenizer (:obj:`AutoTokenizer` or :obj:`GPT2Tokenizer`, optional): Tokenizer for :obj:`model`.
+        max_model_token_num (:obj:`int`, optional): Maximum number of tokenized words allowed by the LM. 
+        batch_size (:obj:`int`, optional): Batch size for the :obj:`DataLoader`. 
+        accelerator (:obj:`Accelerator`, optional): An instance of the `Accelerator` class, used for multiprocessing.
+        output_json_filepath (:obj:`str`, optional): File path for output `JSON` file. 
+        output_json_filename (:obj:`str`, optional): File name for output `JSON` file. 
+        api_name (:obj:`str`, optional): Name of API service. 
+        call_api (:obj:`bool`): If ``True``, an API for LM models will be used, determined by :obj:`api_name`.   
+        labels (:obj:`List`, optional): A list of labels for all classes.
     """    
     def __init__(self,
                  model_name: Optional[str] = 'gpt2-xl',

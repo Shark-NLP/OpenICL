@@ -19,17 +19,19 @@ logger = get_logger(__name__)
 class GenInferencer(BaseInferencer):
     """Generation In-context Learning Inferencer Class
         In-context Learning Inferencer for Directly Generation.
+        
     Attributes:
-        model (AutoModelForCausalLM, optional): Local PLM (loaded from Hugging Face), which can be initialized by name or a config class. 
-        tokenizer (AutoTokenizer or GPT2Tokenizer, optional): Tokenizer for `model`.
-        max_model_token_num (int, optional): Maximum number of tokenized words allowed by the LM. 
-        batch_size (int, optional): Batch size for the `DataLoader`. 
-        accelerator (Accelerator, optional): An instance of the `Accelerator` class, used for multiprocessing.
-        output_json_filepath (str, optional): File path for output JSON file. 
-        output_json_filename (str, optional): File name for output JSON file. 
-        call_api (bool, optional): If True, an API for LM models will be used.   
-        gen_field_replace_token (str, optional): Used to replace the generation field token when generating prompts.
-        generation_kwargs (Dict, optional): Parameters for the `model.generate()` method. 
+        model (:obj:`AutoModelForCausalLM`, optional): Local PLM (loaded from Hugging Face), which can be initialized by name or a config class. 
+        tokenizer (:obj:`AutoTokenizer` or :obj:`GPT2Tokenizer`, optional): Tokenizer for :obj:`model`.
+        max_model_token_num (:obj:`int`, optional): Maximum number of tokenized words allowed by the LM. 
+        batch_size (:obj:`int`, optional): Batch size for the :obj:`DataLoader`. 
+        accelerator (:obj:`Accelerator`, optional): An instance of the `Accelerator` class, used for multiprocessing.
+        output_json_filepath (:obj:`str`, optional): File path for output `JSON` file. 
+        output_json_filename (:obj:`str`, optional): File name for output `JSON` file. 
+        api_name (:obj:`str`, optional): Name of API service. 
+        call_api (:obj:`bool`): If ``True``, an API for LM models will be used, determined by :obj:`api_name`.   
+        gen_field_replace_token (:obj:`str`, optional): Used to replace the generation field token when generating prompts.
+        generation_kwargs (:obj:`Dict`, optional): Parameters for the :obj:`model.generate()` method. 
     """
     def __init__(self,
                  model_name: Optional[str] = 'gpt2-xl', 

@@ -13,15 +13,16 @@ import torch
 class DatasetReader:
     """In-conext Learning Dataset Reader Class
         Generate an DatasetReader instance through 'dataset'.
+        
     Attributes:
-        dataset (Dataset or DatasetDict): The dataset to be read.
-        input_columns (List[str], str): A list of column names (a string of column name) in the dataset that represent(s) the input field.
-        output_column (str): A column name in the dataset that represents the prediction field.
-        ds_size (int or float, optional): The number of pieces of data to return. When ds_size is an integer and greater than or equal to 1, `ds_size` pieces of data are randomly returned. When 0 < ds_size < 1, `int(len(dataset) * ds_size)` pieces of data are randomly returned. (used for testing)
-        references(list, optional): The list of references, initialized by `self.dataset[self.test_split][self.output_column]`.
-        input_template (PromptTemplate, optional): An instance of the `PromptTemplate` class, used to format the input field content during the retrieval process. (in some retrieval methods)
-        output_template (PromptTemplate, optional): An instance of the `PromptTemplate` class, used to format the output field content during the retrieval process. (in some learnable retrieval methods)
-        input_output_template (PromptTemplate, optional): An instance of the `PromptTemplate` class, used to format the input-output field content during the retrieval process. (in some retrieval methods)
+        dataset (:obj:`Dataset` or :obj:`DatasetDict`): The dataset to be read.
+        input_columns (:obj:`List[str]` or :obj:`str`): A list of column names (a string of column name) in the dataset that represent(s) the input field.
+        output_column (:obj:`str`): A column name in the dataset that represents the prediction field.
+        ds_size (:obj:`int` or :obj:`float`, optional): The number of pieces of data to return. When ds_size is an integer and greater than or equal to 1, `ds_size` pieces of data are randomly returned. When 0 < :obj:`ds_size` < 1, ``int(len(dataset) * ds_size)`` pieces of data are randomly returned. (used for testing)
+        references(:obj:`list`, optional): The list of references, initialized by ``self.dataset[self.test_split][self.output_column]``.
+        input_template (:obj:`PromptTemplate`, optional): An instance of the :obj:`PromptTemplate` class, used to format the input field content during the retrieval process. (in some retrieval methods)
+        output_template (:obj:`PromptTemplate`, optional): An instance of the :obj:`PromptTemplate` class, used to format the output field content during the retrieval process. (in some learnable retrieval methods)
+        input_output_template (:obj:`PromptTemplate`, optional): An instance of the `PromptTemplate` class, used to format the input-output field content during the retrieval process. (in some retrieval methods)
     """
     dataset = None
     input_template = None
@@ -72,11 +73,11 @@ class DatasetReader:
     
     
     def set_references(self, column: str, split: Optional[str] = None) -> None:
-        """Set `self.references` based on `column` and optional `split`.
+        """Set :obj:`self.references` based on :obj:`column` and optional :obj:`split`.
 
         Args:
-            column (str): A string of column name.
-            split (str, optional): A string of dataset split. Defaults to None.
+            column (:obj:`str`): A string of column name.
+            split (:obj:`str`, optional): A string of dataset split. Defaults to ``None``.
         """        
         if split is not None:
             self.references = self.dataset[split][column]
@@ -85,13 +86,13 @@ class DatasetReader:
     
     
     def generate_input_field_prompt(self, entry: Dict) -> str:
-        """Generate a prompt for the input field based on the provided 'entry' data.
+        """Generate a prompt for the input field based on the provided :obj:`entry` data.
 
         Args:
-            entry (Dict): A piece of data to be used for generating the prompt.
+            entry (:obj:`Dict`): A piece of data to be used for generating the prompt.
 
         Returns:
-            str: The generated prompt.
+            :obj:`str`: The generated prompt.
         """        
         prompt = None
         if self.input_template is None:
@@ -105,11 +106,11 @@ class DatasetReader:
         """Generate corpus for input field.
 
         Args:
-            dataset (Dataset or DatasetDict): A 'datasets.Dataset' or 'datasets.DatasetDict' instance.
-            split (str, optional): The split of the dataset to use. If None, the entire dataset will be used. Defaults to None.
+            dataset (:obj:`Dataset` or :obj:`DatasetDict`): A :obj:`datasets.Dataset` or :obj:`datasets.DatasetDict` instance.
+            split (:obj:`str`, optional): The split of the dataset to use. If :obj:`None`, the entire dataset will be used. Defaults to ``None``.
 
         Returns:
-            List[str]: A list of generated input field prompts.
+            :obj:`List[str]`: A list of generated input field prompts.
         """        
         if split is not None:
             dataset = dataset[split]
@@ -120,13 +121,13 @@ class DatasetReader:
     
     
     def generate_ouput_field_prompt(self, entry: Dict) -> str:
-        """Generate a prompt for the output field based on the provided 'entry' data.
+        """Generate a prompt for the output field based on the provided :obj:`entry` data.
 
         Args:
-            entry (Dict): A piece of data to be used for generating the prompt.
+            entry (:obj:`Dict`): A piece of data to be used for generating the prompt.
 
         Returns:
-            str: The generated prompt.
+            :obj:`str`: The generated prompt.
         """
         prompt = None
         if self.output_template is None:
@@ -140,11 +141,11 @@ class DatasetReader:
         """Generate corpus for output field.
 
         Args:
-            dataset (Dataset or DatasetDict): A 'datasets.Dataset' or 'datasets.DatasetDict' instance.
-            split (str, optional): The split of the dataset to use. If None, the entire dataset will be used. Defaults to None.
+            dataset (:obj:`Dataset` or :obj:`DatasetDict`): A :obj:`datasets.Dataset` or :obj:`datasets.DatasetDict` instance.
+            split (:obj:`str`, optional): The split of the dataset to use. If :obj:`None`, the entire dataset will be used. Defaults to ``None``.
 
         Returns:
-            List[str]: A list of generated output field prompts.
+            :obj:`List[str]`: A list of generated output field prompts.
         """
         if split is not None:
             dataset = dataset[split]
@@ -155,13 +156,13 @@ class DatasetReader:
     
     
     def generate_input_output_field_prompt(self, entry: Dict) -> str:
-        """Generate a prompt for the input-output field based on the provided 'entry' data.
+        """Generate a prompt for the input-output field based on the provided:obj:`entry` data.
 
         Args:
-            entry (Dict): `A piece of data to be used for generating the prompt.`
+            entry (:obj:`Dict`): A piece of data to be used for generating the prompt.
 
         Returns:
-            str: The generated prompt.
+            :obj:`str`: The generated prompt.
         """
         prompt = None
         if self.input_output_template is None:
@@ -175,11 +176,11 @@ class DatasetReader:
         """Generate corpus for input-output field.
 
         Args:
-            dataset (Dataset or DatasetDict): A 'datasets.Dataset' or 'datasets.DatasetDict' instance.
-            split (str, optional): The split of the dataset to use. If None, the entire dataset will be used. Defaults to None.
+            dataset (:obj:`Dataset` or :obj:`DatasetDict`): A :obj:`datasets.Dataset` or :obj:`datasets.DatasetDict` instance.
+            split (:obj:`str`, optional): The split of the dataset to use. If :obj:`None`, the entire dataset will be used. Defaults to ``None``.
 
         Returns:
-            List[str]: A list of generated input-output field prompts.
+            :obj:`List[str]`: A list of generated input-output field prompts.
         """
         if split is not None:
             dataset = dataset[split]
@@ -193,7 +194,7 @@ class DatasetReader:
         if isinstance(obj, DatasetReader):
             return obj
         else:
-            raise TypeError(f"Expected a IclDatasetReader object, but got {obj}") 
+            raise TypeError(f"Expected a DatasetReader object, but got {obj}") 
         
             
     def __len__(self):

@@ -12,14 +12,14 @@ class ZeroRetriever(BaseRetriever):
         Retriever for Zero-shot.
         
     Attributes:
-        dataset_reader (DatasetReader): An instance of the `DatasetReader` class.
-        ice_eos_token (str, optional): A string that is added to the end of in-context examples.
-        prompt_eos_token (str, optional): A string that is added to the end of the prompt.
-        index_split (str, optional): A string for the index dataset name. The index dataset is used to select data for in-context examples. The default is 'train'.
-        test_split (str, optional): A string for the generation dataset name. The test dataset is used to generate prompts for each data. The default is 'test'.
-        index_ds (Dataset): The index dataset. Used to select data for in-context examples.
-        test_ds (Dataset): The test dataset. Used to generate prompts for each data.
-        accelerator (Accelerator, optional): An instance of the `Accelerator` class, used for multiprocessing.
+        dataset_reader (:obj:`DatasetReader`): An instance of the :obj:`DatasetReader` class.
+        ice_eos_token (:obj:`str`, optional): A string that is added to the end of in-context examples.
+        prompt_eos_token (:obj:`str`, optional): A string that is added to the end of the prompt.
+        index_split (:obj:`str`, optional): A string for the index dataset name. The index dataset is used to select data for in-context examples. Defaults to ``train``.
+        test_split (:obj:`str`, optional): A string for the generation dataset name. The test dataset is used to generate prompts for each data. Defaults to ``test``.
+        index_ds (:obj:`Dataset`): The index dataset. Used to select data for in-context examples.
+        test_ds (:obj:`Dataset`): The test dataset. Used to generate prompts for each data.
+        accelerator (:obj:`Accelerator`, optional): An instance of the :obj:`Accelerator` class, used for multiprocessing.
     """    
     def __init__(self,
                  dataset_reader: DatasetReader,

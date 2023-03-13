@@ -6,12 +6,13 @@ from .utils.check_type import _check_type_list, _check_dict
 class PromptTemplate:
     """In-context Learning Prompt Template Class
         This class represents a template that guides the generation of prompts in the retrieval or inference process.
+        
     Attributes:
-        template (Dict or str): A custom template dictionary or string. If a dictionary, the keys of the dictionary represent the values of the output_column, and the values represent the corresponding generated statement. If a string, it represents a string template. 
-        column_token_map (Dict): A dictionary mapping column names to specific tokens. The tokens will be replaced by data in the corresponding column (one piece each time) during the retrieval or inference process.
-        selected_column_name (str, optional): Used only with string-type templates. A specific column that needs its value to be mapped.
-        selected_column_map (Dict, optional): Used only with string-type templates. Maps the value of the column `selected_column_name`.
-        ice_token(str, optional): A string that represents the specific token mapping from in-context examples. None if you want to use this template only to generate in-context examples, otherwise it can be used to generate the final prompt that is fed into the PLM. The ice_token will be invisible when generating in-context examples.
+        template (:obj:`Dict` or :obj:`str`): A custom template dictionary or string. If a dictionary, the keys of the dictionary represent the values of the output_column, and the values represent the corresponding generated statement. If a string, it represents a string template. 
+        column_token_map (:obj:`Dict`): A dictionary mapping column names to specific tokens. The tokens will be replaced by data in the corresponding column (one piece each time) during the retrieval or inference process.
+        selected_column_name (:obj:`str`, optional): Used only with string-type templates. A specific column that needs its value to be mapped.
+        selected_column_map (:obj:`Dict`, optional): Used only with string-type templates. Maps the value of the column :obj:`selected_column_name`.
+        ice_token(:obj:`str`, optional): A string that represents the specific token mapping from in-context examples. None if you want to use this template only to generate in-context examples, otherwise it can be used to generate the final prompt that is fed into the PLM. The ice_token will be invisible when generating in-context examples.
     """
     def __init__(self,
                  template: Union[Dict, str],
@@ -51,14 +52,14 @@ class PromptTemplate:
                 
 
     def generate_ice_item(self, entry: Dict, label: Hashable) -> str:
-        """Generate in-context example based on the provided 'entry' data.
+        """Generate in-context example based on the provided :obj:`entry` data.
 
         Args:
-            entry (Dict): A piece of data to be used for generating the in-context example.
-            label (Hashable): The value of the output field.
+            entry (:obj:`Dict`): A piece of data to be used for generating the in-context example.
+            label (:obj:`Hashable`): The value of the output field.
 
         Returns:
-            str: The generated in-context example.
+            :obj:`str`: The generated in-context example.
         """        
         # Select the corresponding template 
         tp = self.template[label] if isinstance(self.template, Dict) else self.template
@@ -75,18 +76,18 @@ class PromptTemplate:
     
     
     def generate_label_prompt_item(self, entry: Dict, ice: str, label: Hashable) -> str:
-        """Generate prompt based on 'entry' data, 'ice' in-context example, and the corresponding 'label'.
+        """Generate prompt based on :obj:`entry` data, :obj:`ice` in-context example, and the corresponding :obj:`label`.
 
         Args:
-            entry (Dict): A piece of data containing the input field content.
-            ice (str): The generated in-context example.
-            label (Hashable): The value of the output field.
+            entry (:obj:`Dict`): A piece of data containing the input field content.
+            ice (:obj:`str`): The generated in-context example.
+            label (:obj:`Hashable`): The value of the output field.
 
         Raises:
-            ValueError: If the `ice_token` attribute of the `PromptTemplate` instance is `None`.
+            ValueError: If the :obj:`ice_token` attribute of the :obj:`PromptTemplate` instance is :obj:`None`.
             
         Returns:
-            str: The generated prompt.
+            :obj:`str`: The generated prompt.
         """        
         if self.ice_token is None:
             raise ValueError("PromptTemplate.ice_token should be not None when generates prompt")
@@ -104,16 +105,16 @@ class PromptTemplate:
     
     
     def generate_item(self, entry: Dict, output_field: Optional[Hashable] = None, output_field_replace_token: Optional[str] = '', ice_field_replace_token: Optional[str] = '') -> str:
-        """Generate an item based on the provided 'entry' data, as well as optional output field and ice field tokens. 
+        """Generate an item based on the provided :obj:`entry` data, as well as optional output field and ice field tokens. 
 
         Args:
-            entry (Dict): A piece of data.
-            output_field (Hashable, optional): Column name of output field. Defaults to None.
-            output_field_replace_token (str, optional): Tokens used to replace output field. Defaults to ''.
-            ice_field_replace_token (str, optional): Tokens used to replace the 'ice_token'. Defaults to ''.
+            entry (:obj:`Dict`): A piece of data.
+            output_field (:obj:`Hashable`, optional): Column name of output field. Defaults to :obj:`None`.
+            output_field_replace_token (:obj:`str`, optional): Tokens used to replace output field. Defaults to ``''``.
+            ice_field_replace_token (str, optional): Tokens used to replace the :obj:`ice_token`. Defaults to ``''``.
 
         Returns:
-            str: The generated item.
+            :obj:`str`: The generated item.
         """        
         tp = None
         if isinstance(self.template, str):

@@ -17,5 +17,6 @@ dist/
 .eggs/
 openicl.egg-info/
 build/
+docs/build/
 *.xml
 *.iml
