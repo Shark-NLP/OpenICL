@@ -62,7 +62,10 @@ class BaseInferencer:
         if not self.call_api:
             self.__init_model(self.model_name, model_config, model_parallel, device_map, no_split_module_classes)
             self.__init_tokenizer(self.tokenizer_name)
-
+        else:
+            if self.api_name == 'opt-175b':
+                self.__init_tokenizer(self.tokenizer_name)
+        
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         if self.model is not None:
             self.model.to(self.device)

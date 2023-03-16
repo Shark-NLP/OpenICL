@@ -20,7 +20,7 @@ def get_generation_prompt_list_from_retriever_indices(ice_idx_list: List[List[in
         ice = retriever.generate_ice(ice_idx, ice_template=ice_template)
         prompt = retriever.generate_prompt_for_generate_task(idx, ice, gen_field_replace_token=gen_field_replace_token,
                                                              ice_template=ice_template, prompt_template=prompt_template)
-        if max_model_token_num is not None:
+        if max_model_token_num is not None and tokenizer is not None:
             prompt_token_num = get_input_token_num(tokenizer, prompt)
             while len(ice_idx) > 0 and prompt_token_num > max_model_token_num:
                 ice_idx = ice_idx[:-1]
