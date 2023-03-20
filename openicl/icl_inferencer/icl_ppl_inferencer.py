@@ -92,7 +92,7 @@ class PPLInferencer(BaseInferencer):
             for idx in range(len(ice_idx_list)):
                 prompt = retriever.generate_label_prompt(idx, ice[idx], label, ice_template=ice_template,
                                                          prompt_template=prompt_template)
-                if self.max_model_token_num is not None:
+                if self.max_model_token_num is not None and self.api_name != 'gpt3':
                     prompt_token_num = self.get_input_token_num(prompt)
                     while len(ice_idx_list[idx]) > 0 and prompt_token_num > self.max_model_token_num:
                         ice_idx_list[idx] = ice_idx_list[idx][:-1]
