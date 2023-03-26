@@ -12,7 +12,6 @@ class DownloadNLTK(install):
 REQUIRES = """
 accelerate==0.15.0
 datasets==2.7.1
-dppy==0.3.2
 evaluate==0.3.0
 faiss_gpu==1.7.2
 nltk==3.8
@@ -22,9 +21,9 @@ rank_bm25==0.2.2
 requests==2.28.1
 scikit_learn==1.2.1
 sentence_transformers==2.2.2
-torch==1.13.1
+torch>=1.13.1
 tqdm==4.64.1
-transformers==4.24.0
+transformers
 """
 
 

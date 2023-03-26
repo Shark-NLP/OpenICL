@@ -6,7 +6,7 @@ from openicl import BaseRetriever, PromptTemplate
 from openicl.utils.api_service import *
 from openicl.icl_evaluator import *
 from transformers import AutoTokenizer, AutoModelForCausalLM, PretrainedConfig, GPT2Tokenizer, AutoConfig, \
-    T5ForConditionalGeneration
+    T5ForConditionalGeneration, LlamaTokenizer
 from typing import List, Union, Optional
 from accelerate import Accelerator
 from accelerate import init_empty_weights, infer_auto_device_map
@@ -132,7 +132,10 @@ class BaseInferencer:
         if self.api_name == 'opt-175b':
             self.tokenizer = GPT2Tokenizer.from_pretrained("facebook/opt-30b", use_fast=False)
         else:
-            self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+            if 'llama' in self.tokenizer_name:
+                self.tokenizer = LlamaTokenizer.from_pretrained(tokenizer_name)
+            else:
+                self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.tokenizer.pad_token = self.tokenizer.eos_token
         self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
         self.tokenizer.padding_side = "left"
