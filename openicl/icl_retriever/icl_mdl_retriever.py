@@ -116,7 +116,7 @@ class MDLRetriever(TopkRetriever):
     def retrieve(self):
         return self.topk_search()
 
-    def cal_ce(self, input_texts: List[List], mask_length=None):
+    def cal_ce(self, input_texts: List[str], mask_length=None):
         if self.metric_model is None:
             logger.info(f'Load model {self.metric_model} for calculating MDL...')
             self.metric_model = AutoModelForCausalLM.from_pretrained(self.ce_model_name)

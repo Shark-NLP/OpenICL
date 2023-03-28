@@ -21,13 +21,15 @@ class PromptTemplate:
                  column_token_map: Dict,
                  selected_column_name: Optional[str] = None,
                  selected_column_map: Optional[Dict] = None,
-                 ice_token: Optional[str] = None
+                 ice_token: Optional[str] = None,
+                 sep_token: Optional[str] = None,
                  ) -> None:
         self.template = _check_type_list(template, [Dict, str])
         self.column_token_map = _check_dict(column_token_map)
         self.selected_column_name = _check_type_list(selected_column_name, [None, str])
         self.selected_column_map = _check_type_list(selected_column_map, [None, Dict])
         self.ice_token = _check_type_list(ice_token, [None, str])
+        self.sep_token = _check_type_list(sep_token, [None, str])
         if (self.selected_column_name is not None and self.selected_column_map is None) or \
                 self.selected_column_name is None and self.selected_column_map is not None:
             raise ValueError("self.selected_column_name and self.selected_column_map should be set together")
@@ -63,6 +65,9 @@ class PromptTemplate:
         """
         # Select the corresponding template 
         tp = self.template[label] if isinstance(self.template, Dict) else self.template
+        # Remove sep token
+        if self.sep_token is not None:
+            tp.replace(self.sep_token, '')
         # Remove ice_token
         if self.ice_token is not None:
             tp = tp.replace(self.ice_token, '')
@@ -74,13 +79,15 @@ class PromptTemplate:
                 tp = tp.replace(token, str(entry[key]))
         return tp
 
-    def generate_label_prompt_item(self, entry: Dict, ice: str, label: Hashable) -> str:
+    def generate_label_prompt_item(self, entry: Dict, ice: str, label: Hashable, remain_sep: Optional[bool] = False) -> str:
         """Generate prompt based on :obj:`entry` data, :obj:`ice` in-context example, and the corresponding :obj:`label`.
 
         Args:
+
             entry (:obj:`Dict`): A piece of data containing the input field content.
             ice (:obj:`str`): The generated in-context example.
             label (:obj:`Hashable`): The value of the output field.
+            remain_sep (:obj:`bool`): If remain sep_token
 
         Raises:
             ValueError: If the :obj:`ice_token` attribute of the :obj:`PromptTemplate` instance is :obj:`None`.
@@ -92,6 +99,9 @@ class PromptTemplate:
             raise ValueError("PromptTemplate.ice_token should be not None when generates prompt")
         # Select the corresponding template
         tp = self.template[label] if isinstance(self.template, Dict) else self.template
+        # Remove sep token
+        if not remain_sep and self.sep_token is not None:
+            tp.replace(self.sep_token, '')
         # Insert in-context examples
         tp = tp.replace(self.ice_token, ice)
         # Replace context token
@@ -101,6 +111,7 @@ class PromptTemplate:
             else:
                 tp = tp.replace(token, str(entry[key]))
         return tp
+
 
     def generate_item(self, entry: Dict, output_field: Optional[Hashable] = None,
                       output_field_replace_token: Optional[str] = '',
@@ -129,6 +140,9 @@ class PromptTemplate:
                 tp = self.template[list(self.template.keys())[0]]
         if self.ice_token is not None:
             tp = tp.replace(self.ice_token, ice_field_replace_token)
+        # Remove sep token
+        if self.sep_token is not None:
+            tp.replace(self.sep_token, '')
         for key, token in self.column_token_map.items():
             if output_field is not None and key == output_field:
                 tp = tp.replace(token, output_field_replace_token)
