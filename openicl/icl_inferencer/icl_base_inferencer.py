@@ -173,7 +173,7 @@ class GenInferencerOutputHandler:
                 'origin_prompt': self.origin_prompt_dict[str(idx)],
                 'output': self.output_dict[str(idx)],
                 'prediction': self.prediction_dict[str(idx)]
-            } for idx in range(self.num)
+            } for idx in self.origin_prompt_dict.keys()
         }
         if self.accelerator is not None:
             with open(f'{output_json_filepath}/process{self.accelerator.process_index}_{output_json_filename}.json',
