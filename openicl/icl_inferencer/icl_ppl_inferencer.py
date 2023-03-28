@@ -54,13 +54,14 @@ class PPLInferencer(BaseInferencer):
 
     def inference(self, retriever: BaseRetriever, ice_template: Optional[PromptTemplate] = None,
                   prompt_template: Optional[PromptTemplate] = None, output_json_filepath: Optional[str] = None,
-                  output_json_filename: Optional[str] = None, normalizing_str: Optional[str] = None) -> List:
+                  output_json_filename: Optional[str] = None) -> List:
         # 1. Preparation for output logs
         output_handler = PPLInferencerOutputHandler(self.accelerator)
 
         sub_predictions = []
         ppl = []
         ice = []
+        index = 0
 
         if output_json_filepath is None:
             output_json_filepath = self.output_json_filepath
@@ -86,14 +87,11 @@ class PPLInferencer(BaseInferencer):
             index = 0
             prompt_list = []
             sub_ppl_list = []
-            normalizing_prompt_list = []
-            context_length_list = []
 
             # 5.1 Generate prompts of current label and truncate 
             for idx in range(len(ice_idx_list)):
                 prompt = retriever.generate_label_prompt(idx, ice[idx], label, ice_template=ice_template,
-                                                         prompt_template=prompt_template,
-                                                         remain_sep=normalizing_str is not None)
+                                                         prompt_template=prompt_template)
                 if self.max_model_token_num is not None and self.api_name != 'gpt3':
                     prompt_token_num = self.get_input_token_num(prompt)
                     while len(ice_idx_list[idx]) > 0 and prompt_token_num > self.max_model_token_num:
@@ -102,44 +100,14 @@ class PPLInferencer(BaseInferencer):
                         prompt = retriever.generate_label_prompt(idx, ice[idx], label, ice_template=ice_template,
                                                                  prompt_template=prompt_template)
                         prompt_token_num = self.get_input_token_num(prompt)
-
-                if normalizing_str is not None:
-                    prompt_sep = prompt
-                    if prompt_template is not None:
-                        sep_token = prompt_template.sep_token
-                    else:
-                        sep_token = ice_template.sep_token
-                    sep_pos = prompt_sep.find(sep_token)
-
-                    context = prompt_sep[0:sep_pos]
-                    answer = prompt_sep[sep_pos:].replace(sep_token, '')
-                    prompt = context + answer
-                    normalizing_prompt = normalizing_str + answer
-
-                    context_length_list.append(self.get_input_token_num(context))
-                    normalizing_prompt_list.append(normalizing_prompt)
                 prompt_list.append(prompt)
-
-            if normalizing_str is not None:
-                normalizing_str_len = self.get_input_token_num(normalizing_str)
 
             # 5.2 Get PPL
             logger.info(f"Calculating PPL for prompts labeled '{label}'")
             for idx in trange(0, len(prompt_list), self.batch_size, disable=not self.is_main_process):
                 sub_prompt_list = prompt_list[idx:idx + self.batch_size]
-                if normalizing_str is not None:
-                    sub_context_length_list = context_length_list[idx:idx + self.batch_size]
-                    sub_normalizing_prompt_list = normalizing_prompt_list[idx:idx + self.batch_size]
-
                 with torch.no_grad():
-                    if normalizing_str is not None:
-                        res1 = self.__get_ppl(input_texts=sub_prompt_list, mask_length=sub_context_length_list)
-                        res2 = self.__get_ppl(input_texts=sub_normalizing_prompt_list,
-                                              mask_length=[normalizing_str_len for i in range(len(sub_prompt_list))]
-                                              )
-                        sub_res = res1 - res2
-                    else:
-                        sub_res = self.__get_ppl(sub_prompt_list).tolist()
+                    sub_res = self.__get_ppl(sub_prompt_list).tolist()
                 for res, prompt in zip(sub_res, sub_prompt_list):
                     sub_ppl_list.append(res)
                     output_handler.save_prompt_and_ppl(label, prompt[len(ice[idx]):], prompt, res, index)
@@ -161,7 +129,7 @@ class PPLInferencer(BaseInferencer):
 
         return [sample['prediction'] for sample in output_handler.results_dict.values()]
 
-    def __get_ppl(self, input_texts: List[str], mask_length=None):
+    def __get_ppl(self, input_texts: List[str]):
         if self.call_api:
             return api_get_ppl(self.api_name, input_texts)
         self.tokenizer.padding_side = "right"
@@ -176,15 +144,6 @@ class PPLInferencer(BaseInferencer):
         loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1)).view(
             shift_labels.size())
 
-        if mask_length is not None:
-            mask = torch.zeros_like(shift_labels)  # [batch,seqlen]
-            for i in range(len(mask)):
-                for j in range(mask_length[i] - 1, len(mask[i])):
-                    mask[i][j] = 1
-            loss = loss * mask
-
         lens = (inputs["input_ids"] != self.tokenizer.pad_token_id).sum(-1).cpu().numpy()
-        if mask_length is not None:
-            lens -= np.array(mask_length)
         ce_loss = loss.sum(-1).cpu().detach().numpy() / lens
         return ce_loss
