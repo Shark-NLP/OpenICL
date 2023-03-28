@@ -18,8 +18,8 @@ author = 'Shanghai AI Lab, SharkNLP'
 copyright = '{}, {}, Licenced under the Apache License, Version 2.0'.format(datetime.datetime.now().year, author)
 
 # The full version, including alpha/beta/rc tags
-release = 'v0.1.5'
-version = 'v0.1.5'
+release = 'v0.1.6'
+version = 'v0.1.6'
 
 
 # -- General configuration ---------------------------------------------------
