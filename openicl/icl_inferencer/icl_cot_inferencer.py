@@ -136,4 +136,4 @@ class CoTInferencer(BaseInferencer):
                 prompt_list = [(prompt + str(self.cot_list[cot_idx])) for prompt in prompt_list]
             else:
                 break
-        return list(output_handler.prediction_dict.values())
+        return [sample['prediction'] for sample in output_handler.results_dict.values()]

@@ -129,4 +129,4 @@ class GenInferencer(BaseInferencer):
             self.accelerator.wait_for_everyone()
         output_handler.merge_to_main_process(output_json_filepath, output_json_filename)
         output_handler.write_to_json(output_json_filepath, output_json_filename)
-        return list(output_handler.prediction_dict.values())
+        return [sample['prediction'] for sample in output_handler.results_dict.values()]
