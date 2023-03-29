@@ -194,6 +194,7 @@ class GenInferencerOutputHandler:
                     subprocess_results_dict = json.load(json_file)
                     self.results_dict.update(subprocess_results_dict)
                     json_file.close()
+            self.results_dict = dict(sorted(self.results_dict.items(), key=lambda x: int(x[0])))
 
     def save_orgin_prompts(self, origin_prompts: List[str]):
         for idx, origin_prompt in enumerate(origin_prompts):
@@ -237,6 +238,7 @@ class PPLInferencerOutputHandler:
                     subprocess_results_dict = json.load(json_file)
                     self.results_dict.update(subprocess_results_dict)
                     json_file.close()
+            self.results_dict = dict(sorted(self.results_dict.items(), key=lambda x: int(x[0])))
 
     def save_ice(self, ice):
         for idx, example in enumerate(ice):
