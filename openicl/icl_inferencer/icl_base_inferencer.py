@@ -7,7 +7,7 @@ from openicl.utils.api_service import *
 from openicl.icl_evaluator import *
 from transformers import AutoTokenizer, AutoModelForCausalLM, PretrainedConfig, GPT2Tokenizer, AutoConfig, \
     T5ForConditionalGeneration
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Any
 from accelerate import Accelerator
 from accelerate import init_empty_weights, infer_auto_device_map
 
@@ -32,8 +32,8 @@ class BaseInferencer:
     call_api = False
 
     def __init__(self,
-                 model_name: Optional[str] = 'gpt2-xl',
-                 tokenizer_name: Optional[str] = None,
+                 model_name: Optional[Union[str, Any]] = 'gpt2-xl',
+                 tokenizer_name: Optional[Union[str, Any]] = None,
                  max_model_token_num: Optional[int] = None,
                  model_config: Optional[PretrainedConfig] = None,
                  batch_size: Optional[int] = 1,
@@ -97,6 +97,9 @@ class BaseInferencer:
         raise NotImplementedError("Method hasn't been implemented yet")
 
     def __init_model(self, model_name, model_config, model_parallel, device_map, no_split_module_classes):
+        if not isinstance(model_name, str):
+            self.model = model_name
+            return
         if not model_parallel:
             if model_config is not None:
                 self.model = self.__get_hf_model_from_config(model_name, model_config)
@@ -132,7 +135,10 @@ class BaseInferencer:
         if self.api_name == 'opt-175b':
             self.tokenizer = GPT2Tokenizer.from_pretrained("facebook/opt-30b", use_fast=False)
         else:
-            self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+            if not isinstance(tokenizer_name, str):
+                self.tokenizer = tokenizer_name
+            else:
+                self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.tokenizer.pad_token = self.tokenizer.eos_token
         self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
         self.tokenizer.padding_side = "left"
