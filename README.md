@@ -107,3 +107,5 @@ If you find this repository helpful, feel free to cite our paper:
   year={2023}
 }
 ```
+## ⭐ Star History 📈
+<img src="https://api.star-history.com/svg?repos=farizrahman4u/loopgpt&type=Date" alt= "Star History Chart" height="350">
