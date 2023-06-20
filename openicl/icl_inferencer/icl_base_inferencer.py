@@ -69,6 +69,7 @@ class BaseInferencer:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         if self.model is not None:
             self.model.to(self.device)
+        self.model.eval()  
         self.max_model_token_num = max_model_token_num
         self.batch_size = batch_size
         self.output_json_filepath = output_json_filepath
@@ -99,6 +100,7 @@ class BaseInferencer:
     def __init_model(self, model_name, model_config, model_parallel, device_map, no_split_module_classes):
         if not isinstance(model_name, str):
             self.model = model_name
+            self.model_name = ''  # set model name to null since we pass the loaded model already
             return
         if not model_parallel:
             if model_config is not None:
