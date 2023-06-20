@@ -160,6 +160,8 @@ The answer is 146
 
 if __name__ == "__main__":
     # fire.Fire(main)
-    main(model_path="/cpfs01/user/wuzhiyong/open-instruct/models/huggyllama/7B/snapshots/weights",
+    
+    # replace with your model_path or huggingface model name here
+    main(model_path="decapoda-research/llama-7b-hf",
     ice_num=4, batch_size=8, sc_size=1)
-
+    

@@ -13,7 +13,7 @@
   <a href="#citation">Citation</a> 
 </p>
 
-![version](https://img.shields.io/badge/version-0.1.7-blue)
+![version](https://img.shields.io/badge/version-0.1.8-blue)
 
 
 ## Overview
@@ -21,6 +21,9 @@ OpenICL provides an easy interface for in-context learning, with many state-of-t
 <div align="center">
 <img src="https://s1.ax1x.com/2023/03/07/ppZWjmt.jpg"  border="0" />
 </div>
+
+## What's News
++ **v0.1.8** Support LLaMA and self-consistency
 
 ## Installation
 Note: OpenICL requires Python 3.8+
@@ -107,5 +110,3 @@ If you find this repository helpful, feel free to cite our paper:
   year={2023}
 }
 ```
-## ⭐ Star History 📈
-<img src="https://api.star-history.com/svg?repos=Shark-NLP/OpenICL&type=Date" alt= "Star History Chart" height="350">
