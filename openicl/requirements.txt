@@ -1,0 +1,12 @@
+vessl
+datasets
+transformers
+torch
+openicl
+faiss
+evaluate
+accelerate
+numpy
+rank_bm25
+tqdm
+nltk
