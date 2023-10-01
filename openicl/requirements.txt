@@ -3,7 +3,6 @@ datasets
 transformers
 torch
 openicl
-faiss
 evaluate
 accelerate
 numpy
